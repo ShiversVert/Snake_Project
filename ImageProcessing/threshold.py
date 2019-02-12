@@ -33,6 +33,7 @@ pygame.display.flip()
 
 
 print(pygame.transform.threshold(display_window, display_window, dark_red, sensibility, set_color = white, inverse_set = False) )
+()
 
 pygame.image.save(display_window,"image_transformed.jpg")
 time.sleep(2)
