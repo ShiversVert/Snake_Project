@@ -6,6 +6,11 @@ import numpy as np
 import pygame.surfarray
 from statistics import mean
 
+## Fucntions
+
+def f_linear(x, a, b):
+	return(int(a*x + b))
+
 ## Init
 white = (255,255,255)
 white_array = np.array([255,255,255])
@@ -45,7 +50,13 @@ pos_green = mask_green.centroid()
 print("Centre des pixels rouges : " + str(pos_red))
 print("Centre des pixels vert : " + str(pos_green))
 
-pygame.draw.line(display_window, black, pos_red, pos_green)
+#Evaluation de la droite entre les 2 points : y = ax + b
+a = (pos_green[1] - pos_red[1]) / (pos_green[0]-pos_red[0])
+b = 0.5 * (pos_red[1] - a*pos_red[0] + pos_green[1]- a*pos_green[0])
+
+points = [(0, f_linear(0,a,b)), (display_width, f_linear(display_width,a,b))]
+
+pygame.draw.line(display_window, black, points[0], points[1])
 pygame.display.flip()
 
 time.sleep(2)
