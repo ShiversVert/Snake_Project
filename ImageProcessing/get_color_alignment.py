@@ -4,12 +4,22 @@ import pygame.camera
 import pygame.transform
 import numpy as np
 import pygame.surfarray
+from random import *
 from statistics import mean
 
 ## Fucntions
 
 def f_linear(x, a, b):
 	return(int(a*x + b))
+
+def generate_random_point(surface, color, radius):
+	radius = randint(0,radius)
+	x = randint(0, surface.get_width())
+	y = randint(0, surface.get_height())
+
+	pygame.draw.circle(surface, color, (x,y), radius)
+	pygame.display.flip()
+	return(0)
 
 ## Init
 white = (255,255,255)
@@ -18,9 +28,6 @@ red = (255,0,0)
 green = (0,255,0)
 black = (0,0,0)
 sensibility = (15,15,15)
-
-pygame.init()
-pygame.camera.init()
 
 display_width = 640
 display_height = 400
