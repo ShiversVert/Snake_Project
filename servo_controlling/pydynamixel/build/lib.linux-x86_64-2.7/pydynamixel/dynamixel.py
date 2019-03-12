@@ -559,7 +559,7 @@ def set_position_no_response(ser, servo_id, position, verbose = VERBOSE, num_err
     """
 
     packet = packets.get_write_position_packet(servo_id, position)
-    write_and_no_get_response(ser, packet, servo_id, verbose, num_error_attempts)
+    write_and_no_get_response(ser, packet)
 
 def set_velocity(ser, servo_id, velocity, verbose = VERBOSE, num_error_attempts = NUM_ERROR_ATTEMPTS):
     """
