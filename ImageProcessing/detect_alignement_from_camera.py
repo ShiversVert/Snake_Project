@@ -43,14 +43,15 @@ def random_color(max = 255):
 
 white = (255,255,255)
 white_array = np.array([255,255,255])
-red = 0xbd4b62
-green = 0xb2c631
+red = 0xf7858f
+green = 0x59e1e1
+blue = 0x0000ff
 black = (0,0,0)
-sensibility = (30,30,30)
+sensibility = (20,20,20)
 exit = False
 
-display_width = 640
-display_height = 480
+display_width = 1280
+display_height = 720
 
 pygame.init()
 pygame.camera.init()
@@ -64,17 +65,33 @@ pygame.display.set_caption('window')
 
 
 camlist = pygame.camera.list_cameras()
+#print(str(camlist));
 if camlist:
-    cam = pygame.camera.Camera(camlist[2],(640,480))
+    cam = pygame.camera.Camera(camlist[0],(1920,1080))
 else :
 	cam = pygame.camera.Camera("/dev/video0",(640,480))
 
 cam.start()
+t1= time.time();
+
 img = cam.get_image()
+img = pygame.transform.scale(img, (display_width, display_height))
 pygame.image.save(img,"image.jpg")
 display_window.blit(img, (0,0))
 pygame.display.flip()
 
+"""Getting the red and green references"""
+
+green = display_window.get_at((0, 0));
+red = display_window.get_at((0, display_height-10));
+
+print(colored("green :","green") + str(green) + colored(",red :","red")  + str(red))
+#Removing the references from the image
+#display_window.blit(img, (-30,0)) #MOve image to the left
+pygame.draw.polygon(display_window, blue, [(0,0), (30,0), (30,30), (0,30)])
+pygame.draw.polygon(display_window, blue, [(0,display_height-1), (30,display_height-1), (30,display_height-31), (0,display_height-31)])
+
+"""Getting the location of red and green pixels"""
 mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
 mask_green = pygame.mask.from_threshold(display_window, green, sensibility)
 
@@ -86,12 +103,14 @@ if(pos_red == (0,0)):
 	exit = True
 else:
 	print("Centre des pixels", colored("rouges","red"), " : ", str(pos_red))
+	pygame.draw.circle(display_window, red, pos_red, 10)
 
 if(pos_green == (0,0)):
 	print("Impossible de trouver des pixels", colored("verts","green"))
 	exit = True
 else : 
 	print("Centre des pixels ", colored("verts","green"), " : " , str(pos_green))
+	pygame.draw.circle(display_window, green, pos_green, 10)
 
 if exit == False : 
 
@@ -103,7 +122,14 @@ if exit == False :
 
 	pygame.draw.line(display_window, black, points[0], points[1])
 	pygame.display.flip()
+t2 = time.time();
+print("Process time = " + str(t2-t1))
 
-time.sleep(2)
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
 
 pygame.quit()
