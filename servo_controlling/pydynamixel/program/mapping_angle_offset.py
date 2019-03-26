@@ -6,11 +6,12 @@ from pydynamixel import dynamixel, chain, registers
 
 import pygame
 from pygame.locals import *
+"""
 pygame.init()
 pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 30)
 fenetre = pygame.display.set_mode((640, 480))
-
+"""
 # TODO opti float()
 
 # t = time()    # DEBUG
@@ -34,18 +35,18 @@ servo_id    = [1,2,3,4,5,6,7,8,9,10,11,12]
 tick_period = 0.01              # Prediode de chaque instruction
 sleep_time  = tick_period/10    # si utilisé, permet de réduire l'utilisation des
                                 # ressources de la machine, mais ticks moins précis
-resolution  = 300     # nombre de tick pour une période de la pos angu d'un servo
+resolution  = 500     # nombre de tick pour une période de la pos angu d'un servo
 #Augmenter le resolution = ralentir
 
 ## Config snake waveform  ##
 n_period    = 1     # nombre de "période" de l'ondulation du serpent
 amplitude   = 300     # amplitude de l'ondulation du serpent  < 500
 ANGLE_MAX   = 120     # angle crete crete max
-turnOffset  = 0
+turnOffset  = 0        # +-150
 
 ############################
 
-move    = 0
+move    = -1
 offset  = 512+turnOffset
 n_servo = len(servo_id)
 
@@ -75,7 +76,7 @@ for n in range(n_servo):
 for n in range(n_servo):
     reg_value = registers.STATUS_RETURN.RETURN_ONLY_FOR_READ
     reg_addr  = registers.STATUS_RETURN_LEVEL  # /!\ /!\ WARNING marche uniquement sur 1 bytes !!!
-                                               # goal position est sur 2 bytes !!!!
+                                           # goal position est sur 2 bytes !!!!
     dynamixel.set_reg_1b(ser, servo_id[n], reg_addr, reg_value)  # revoie une reponse
     print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
 
@@ -88,11 +89,15 @@ for n in range(n_servo):
     sleep(0.1)
     dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
 dynamixel.send_action_packet( ser )
-sleep(2)
+
+
+print("Commencer?")
+a = raw_input()
+
 
 t = time()
 tick = 0
-for i in range(1,1000):
+for i in range(1,2000):
     tick += move
     for n in range(n_servo):
         # dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
@@ -109,9 +114,11 @@ for i in range(1,1000):
     # Angle safe check (can slow execution)
     assert abs(max(goal_pos_vect)-offset) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
 
+
     # Wait next tick
     while( time() < t+i*tick_period ):    # tick => i
         # pass
+        '''
         if ( tick%10 == 0 ):
             for event in pygame.event.get():    #Attente des événements
                 # if event.type == QUIT:
@@ -141,39 +148,11 @@ for i in range(1,1000):
                         fenetre.blit(textsurface,(0,0))
                         pygame.display.flip()
 
-
+        '''
         #sleep(sleep_time)   # utile si tick_period>0.001 ?
-    print( time()-t )  # DEBUG
+print( time()-t )  # DEBUG
 
 print('Success!')
 
 
-"""
-OPTIMISATIO POSSIBLE :
-° 2 modes : ne pas envoyer (et attendre) le status packet
-          => set servo + modif PyDynamixel
 
-° mode goal pos : réduction de temps de d'execution du protocole
-                  (module serial ??)
-
-° mode velocity :
-    - wheel mode  => impossible car c'est le torque de l'on controle en wheel mode
-
-
-with status packet
-    goal pos         : n_servo WRITE/READ + ( 1 WRITE )
-    wheel mode       : n_servo READ + n_servo WRITE/READ + ( 1 WRITE )
-
-without status packet
-    goal pos         : n_servo WRITE + ( 1 WRITE )
-    wheel mode       : n_servo READ + n_servo WRITE + ( 1 WRITE )
-    simple velo mode : n READ + n WRITE + ( 1 WRITE ) + max:n_servo WRITE
-
-
-mega opti !!!!! =>  set different response dealy time
-                    and send ONE get_value instruction in broadcast
-                    => no car pas de status packet si broadcast
-                =>  refaire la librairy ?
-                    => autant le faire en C (plus rapide ?)
-
-"""
