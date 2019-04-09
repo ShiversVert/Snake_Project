@@ -92,15 +92,15 @@ sleep(2)
 
 t = time()
 tick = 0
-for i in range(1,1000):
+for i in range(1,100000):
     tick += move
     for n in range(n_servo):
         # dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
         dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
 
-        print "    ", time()-t  # DEBUG
+        #print "    ", time()-t  # DEBUG
     dynamixel.send_action_packet( ser )
-    print "  ", time()-t        # DEBUG
+    #print "  ", time()-t        # DEBUG
 
     # compute next goal position vector
     goal_pos_vect = [ int( round( offset + amplitude_norm * cos( omega*n + tick*mvt_speed ) ) )    for n in range(n_servo) ]
@@ -131,13 +131,13 @@ for i in range(1,1000):
                     elif (event.key == K_LEFT ):
                         if (offset > 460):
                             offset -= 5
-                        textsurface = myfont.render("LEFT    => OFFSET : {}         ".format(offset), False, (255, 0, 255), (0,100,0) )
+                        textsurface = myfont.render("LEFT    => OFFSET : {}         ".format(offset-512), False, (255, 0, 255), (0,100,0) )
                         fenetre.blit(textsurface,(0,0))
                         pygame.display.flip()
                     elif (event.key == K_RIGHT):
                         if (offset < 564):
                             offset += 5
-                        textsurface = myfont.render("RIGHT   => OFFSET : {}         ".format(offset), False, (255, 0, 255), (0,100,0) )
+                        textsurface = myfont.render("RIGHT   => OFFSET : {}         ".format(offset-512), False, (255, 0, 255), (0,100,0) )
                         fenetre.blit(textsurface,(0,0))
                         pygame.display.flip()
 

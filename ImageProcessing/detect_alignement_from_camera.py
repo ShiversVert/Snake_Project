@@ -17,8 +17,10 @@ from random import *
 from statistics import mean
 from termcolor import colored
 
+DEBUG = True
+white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
 
-# Fucntions
+# Functions
 
 def f_linear(x, a, b):
     return (int(a * x + b))
@@ -29,54 +31,40 @@ def draw_linear(a, b,color, display_width, display_window):
 	pygame.draw.line(display_window, color, points[0], points[1])
 	pygame.display.flip()
 
-
-def generate_random_point(surface, color, radius, min_radius=5):
-	radius = randint(min_radius, radius)
-	x = randint(0, surface.get_width())
-	y = randint(0, surface.get_height())
-
-	pygame.draw.circle(surface, color, (x, y), radius)
-	pygame.display.flip()
-	return (0)
-
-
-def generate_random_polygon(surface, color, size=40, max_sides=15):
-    side_number = randint(3, max_sides)
-    # "center" of the polygon
-    x = randint(0, surface.get_width())
-    y = randint(0, surface.get_height())
-    vertices = []
-
-    for i in range(side_number):
-        vertices.append(((x + randint(-size, size)), (y + randint(-size, size))))
-
-    pygame.draw.polygon(surface, color, vertices)
-    pygame.display.flip()
-    return (0)
-
-
 def random_color(max=255):
     return (randint(0, max), randint(0, max), randint(0, max))
 
 
-def draw_target(distance_to_go, red_pos, green_pos, head_color="red", radius=10):
-    return 0
+def draw_target(distance_to_go, red_pos, green_pos, display_window, head_color=green, radius=10, color = blue, width = 1):
+	if head_color == green :
+		vect_directeur = np.subtract(green_pos, red_pos)
+	elif head_color == red:
+		vect_directeur = np.subtract(red_pos, green_pos)
+	else :
+		return(0,0)
+	print(vect_directeur)
+
+	norm = np.sqrt(float(vect_directeur[0]*vect_directeur[0] + vect_directeur[1] * vect_directeur[1]))
+	
+	center = vect_directeur/ norm * distance_to_go + green_pos
+	center = center.astype(int)
+
+	pygame.draw.circle(display_window, color, center, radius, width)
+	pygame.draw.circle(display_window, color, center, radius+20, width)
+	pygame.draw.circle(display_window, color, center, radius+40, width)
+	pygame.display.flip()
+
+	return (vect_directeur)
 
 
 ## Init
 
-white = 0xffffff
-red = 0xff5f5f
-green = 0x4eb7a6
-blue = 0x0000ff
-black = (0, 0, 0)
 sensibility = (20, 20, 20)
-exit = False
+exit = False;get_color = False
+a = 0; b = 0;
+target_pos = (0,0)
 
-display_width = 1280
-display_height = 720
-
-get_color = False
+display_width = 1280; display_height = 720
 
 pygame.init()
 pygame.camera.init()
@@ -97,7 +85,7 @@ else:
     cam = pygame.camera.Camera("/dev/video0", (640, 480))
 
 cam.start()
-running = True; set_ref = True;
+running = True; set_ref = True; display_target = False;
 acquisition_time = []
 process_time = []
 
@@ -115,7 +103,7 @@ while running:
 		green = display_window.get_at((0, 0));
 		red = display_window.get_at((0, display_height - 10));
 
-		print(colored("green :", "green") + str(green) + colored(",red :", "red") + str(red))
+		if(DEBUG): print(colored("green :", "green") + str(green) + colored(",red :", "red") + str(red))
 
 		# Removing the references from the image
 		# display_window.blit(img, (-30,0)) #Move image to the left
@@ -132,21 +120,21 @@ while running:
 
 	if (pos_red == (0, 0)):
 		print("Impossible de trouver des pixels", colored("rouges", "red"))
-		process_points = True
-	else:
-		print("Centre des pixels", colored("rouges", "red"), " : ", str(pos_red))
-		pygame.draw.circle(display_window, red, pos_red, 10)
 		process_points = False
+
+	else:
+		if(DEBUG): print("Centre des pixels", colored("rouges", "red"), " : ", str(pos_red))
+		pygame.draw.circle(display_window, red, pos_red, 10)
+		process_points = True
 
 	if (pos_green == (0, 0)):
 		print("Impossible de trouver des pixels", colored("verts", "green"))
-		process_points = True
+		process_points =False
 	else:
-		print("Centre des pixels ", colored("verts", "green"), " : ", str(pos_green))
+		if(DEBUG): print("Centre des pixels ", colored("verts", "green"), " : ", str(pos_green))
 		pygame.draw.circle(display_window, green, pos_green, 10)
-		process_points = False
 
-	if process_points == False:
+	if process_points == True:
 		# Evaluation de la droite entre les 2 points : y = ax + b
 		a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
 		b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
@@ -156,13 +144,16 @@ while running:
 	#Draw the reference ine in white
 	if set_ref == True : 
 		a_ref, b_ref = a , b
+		green_ref, red_ref = pos_green, pos_red
 		set_ref = False
+
 	#Draw ref
 	draw_linear(a_ref, b_ref, white, display_width, display_window)	
+	draw_target(300, red_ref, green_ref, display_window, head_color=green, radius=10)
 
 	t2 = time.time();
 	process_time.append(t2 - t1)
-	print("Process time = " + str(t2 - t1))
+	if(DEBUG): print("Process time = " + str(t2 - t1))
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -171,7 +162,11 @@ while running:
 			if event.key == pygame.K_d:
 				print(colored("Changement de ref", "blue"))
 				set_ref = True
-
+			"""
+			if event.key == pygame.K_f:
+				print(colored("Defining target position", "blue"))
+				set_target
+			"""
 
 pygame.quit()
 
