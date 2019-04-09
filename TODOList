@@ -1,9 +1,14 @@
 TODOList
 
-1)Fonction qui renvoie la position (le centre) de la cible après l'initialisation du serpent
-2)Fonction qui pilote le serpent pendant un temps fixé avec les différents paramètre sur lesquels on joue 
-	-> Amplitude de la sinusoide
-	-> Offset general
-3) Fonction qui évalue le score en fonction de la distance à la cible. Les equi-score sont des elipse dont le centre est à la distance parcourue par le serpent 
+I] FOnction qui génère des individus aléatoirement (Amplitude,offset)
+II]Test des individus{
+	1)Fonction qui renvoie la position (le centre) de la cible après l'initialisation du serpent
+	2)Fonction qui pilote le serpent pendant un temps fixé avec les différents paramètre sur lesquels on joue 
+		-> Amplitude de la sinusoide
+		-> Offset general
+	3) Fonction qui évalue le score en fonction de la distance à la cible. Les equi-score sont des elipse dont le centre est à la distance parcourue par le serpent 
+}
+III]Hybridations des individus les plus performants de la génération (Comment faire?)
+IV]AJout de mutations aléatoires
 
 Penser à mémoriser les différents individus avec leur scores et leur génération dans un fichier csv/txt pour faire des graphs
