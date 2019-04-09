@@ -85,14 +85,15 @@ ser         = dynamixel.get_serial_for_url(serial_port)
 servo_id    = [1,2,3,4,5,6,7,8,9,10,11,12]
 
 ## Config servos movement ##
-tick_period = 0.01
+tick_period = 0.01              # Prediode de chaque instruction
 sleep_time  = tick_period/10    # si utilisé, permet de réduire l'utilisation des
                                 # ressources de la machine, mais ticks moins précis
-resolution  = 500#300     # nombre de tick pour une période de la pos angu d'un servo
+resolution  = 300     # nombre de tick pour une période de la pos angu d'un servo
+#Augmenter le resolution = ralentir
 
 ## Config snake waveform  ##
 n_period    = 1     # nombre de "période" de l'ondulation du serpent
-amplitude   = 300     # amplitude de l'ondulation du serpent
+amplitude   = 300     # amplitude de l'ondulation du serpent  < 500
 ANGLE_MAX   = 120     # angle crete crete max
 turnOffset  = 0
 
@@ -175,13 +176,13 @@ for i in range(1,nb_tick):
                     elif (event.key == K_LEFT ):
                         if (offset > 460):
                             offset -= 5
-                        textsurface = myfont.render("LEFT    => OFFSET : {}         ".format(offset), False, (255, 0, 255), (0,100,0) )
+                        textsurface = myfont.render("LEFT    => OFFSET : {}         ".format(offset-512), False, (255, 0, 255), (0,100,0) )
                         fenetre.blit(textsurface,(0,0))
                         pygame.display.flip()
                     elif (event.key == K_RIGHT):
                         if (offset < 564):
                             offset += 5
-                        textsurface = myfont.render("RIGHT   => OFFSET : {}         ".format(offset), False, (255, 0, 255), (0,100,0) )
+                        textsurface = myfont.render("RIGHT   => OFFSET : {}         ".format(offset-512), False, (255, 0, 255), (0,100,0) )
                         fenetre.blit(textsurface,(0,0))
                         pygame.display.flip()
 

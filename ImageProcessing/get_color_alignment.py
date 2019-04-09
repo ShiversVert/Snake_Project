@@ -21,6 +21,20 @@ def generate_random_point(surface, color, radius):
 	pygame.display.flip()
 	return(0)
 
+def generate_random_polygon(surface, color, size=40, max_sides=15):
+    side_number = randint(3, max_sides)
+    # "center" of the polygon
+    x = randint(0, surface.get_width())
+    y = randint(0, surface.get_height())
+    vertices = []
+
+    for i in range(side_number):
+        vertices.append(((x + randint(-size, size)), (y + randint(-size, size))))
+
+    pygame.draw.polygon(surface, color, vertices)
+    pygame.display.flip()
+    return (0)
+    
 ## Init
 white = (255,255,255)
 white_array = np.array([255,255,255])
