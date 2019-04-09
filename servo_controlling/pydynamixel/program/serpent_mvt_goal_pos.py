@@ -19,6 +19,60 @@ fenetre = pygame.display.set_mode((640, 480))
 #####  0.00276 sec  #####
 # assert 0
 
+def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=0):
+    """
+    If status_return disable => return nothing when new set
+    If status_return enable  => return status packet when new set
+    """
+    n_servo  = len(servo_id)
+    reg_addr = registers.STATUS_RETURN_LEVEL
+    if   (reg_value == registers.STATUS_RETURN.RETURN_FOR_ALL_PACKETS):
+        wait_response = False
+    elif (reg_value == registers.STATUS_RETURN.RETURN_ONLY_FOR_READ):
+        wait_response = True
+    else:
+        raise ValueError("Incorrect value for reg_value")
+
+    sleep(t_init_sleep)
+    for n in range(n_servo):
+        dynamixel.set_reg_1b( ser, servo_id[n], reg_addr, reg_value, wait_response )
+        print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
+        sleep(t_sleep)
+
+def multi_set_velocity(ser, servo_id, v, t_init_sleep=0.1, t_sleep=0):
+    """
+    need status return enable
+
+    v can be a value or a list
+    """
+    n_servo = len(servo_id)
+
+    if   (type(v) == int):
+        velocity = [ v for i in range(n_servo) ]
+    elif (type(v) == list):
+        if (len(v) == n_servo):
+            raise ValueError("lenght servo_id and lenght v are not equal")
+        velocity = v
+    else:
+        raise TypeError("v need to be an int or a list")
+
+    sleep(t_init_sleep)
+    for n in range(n_servo):
+        dynamixel.set_velocity(ser, servo_id[n] , velocity[n])
+        sleep(t_sleep)
+
+def multi_init_pos(t_final_sleep=2, t_sleep=0.1):
+    # init goal position vector
+    global goal_pos_vect
+    goal_pos_vect = [ int( round( offset + amplitude_norm * sin( omega*n ) ) )    for n in range(n_servo) ]
+    # Angle safe check (can slow execution)
+    assert abs(max(goal_pos_vect)-offset) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
+
+    for n in range(n_servo):
+        sleep(t_sleep)
+        dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
+
+    sleep(t_final_sleep)
 
 ############################
 
@@ -34,7 +88,7 @@ servo_id    = [1,2,3,4,5,6,7,8,9,10,11,12]
 tick_period = 0.01
 sleep_time  = tick_period/10    # si utilisé, permet de réduire l'utilisation des
                                 # ressources de la machine, mais ticks moins précis
-resolution  = 300     # nombre de tick pour une période de la pos angu d'un servo
+resolution  = 500#300     # nombre de tick pour une période de la pos angu d'un servo
 
 ## Config snake waveform  ##
 n_period    = 1     # nombre de "période" de l'ondulation du serpent
@@ -51,58 +105,49 @@ n_servo = len(servo_id)
 # pré-calculs
 mvt_speed      = 2 * pi * 1./resolution
 amplitude_norm = amplitude * (float(n_period)/n_servo) * 1024./300.
-omega          = 2 * pi *n_period/float(n_servo)
+omega          = 2 * pi * n_period/float(n_servo)
 
 
-# enable write response
-for n in range(n_servo):
-    reg_value = registers.STATUS_RETURN.RETURN_FOR_ALL_PACKETS
-    reg_addr  = registers.STATUS_RETURN_LEVEL  # /!\ /!\ WARNING marche uniquement sur 1 bytes !!!
-                                               # goal position est sur 2 bytes !!!!
-    dynamixel.set_reg_1b( ser, servo_id[n], reg_addr, reg_value, False )  # revoie pas de reponse
-    print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
-
-### Velocity settings ###
-v = 400
-velocity = [ v for i in range(n_servo) ]
-sleep(0.1)
-for n in range(n_servo):
-    dynamixel.set_velocity(ser, servo_id[n] , velocity[n])
-    #sleep(0.1)
-
-# disable write response
-for n in range(n_servo):
-    reg_value = registers.STATUS_RETURN.RETURN_ONLY_FOR_READ
-    reg_addr  = registers.STATUS_RETURN_LEVEL  # /!\ /!\ WARNING marche uniquement sur 1 bytes !!!
-                                               # goal position est sur 2 bytes !!!!
-    dynamixel.set_reg_1b(ser, servo_id[n], reg_addr, reg_value)  # revoie une reponse
-    print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
 
 
-# init position
-goal_pos_vect = [ int( round( offset + amplitude_norm * cos( omega*n ) ) )    for n in range(n_servo) ]
-# Angle safe check (can slow execution)
-assert abs(max(goal_pos_vect)-offset) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
-for n in range(n_servo):
-    sleep(0.1)
-    dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
-dynamixel.send_action_packet( ser )
-sleep(2)
+
+# enable write response for all instructions ()
+multi_set_status_return(ser, servo_id, registers.STATUS_RETURN.RETURN_FOR_ALL_PACKETS)
+
+# Set velocity for init
+multi_set_velocity(ser,servo_id, 200)
+
+# Move the snake in init position
+multi_init_pos()
+
+# Set velocity for movement
+multi_set_velocity(ser,servo_id, 400)
+
+# disable write response for read instructions
+multi_set_status_return(ser, servo_id, registers.STATUS_RETURN.RETURN_ONLY_FOR_READ)
+
+
 
 t = time()
 tick = 0
-for i in range(1,100000):
+nb_tick = 10000
+for i in range(1,nb_tick):
     tick += move
     for n in range(n_servo):
+
+        # TEST BLOCAGE
+        if ( servo_id[n] == 10):
+            continue
+
         # dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
         dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
 
         print "    ", time()-t  # DEBUG
-    dynamixel.send_action_packet( ser )
+    #dynamixel.send_action_packet( ser )
     print "  ", time()-t        # DEBUG
 
     # compute next goal position vector
-    goal_pos_vect = [ int( round( offset + amplitude_norm * cos( omega*n + tick*mvt_speed ) ) )    for n in range(n_servo) ]
+    goal_pos_vect = [ int( round( offset + amplitude_norm * sin( omega*n + tick*mvt_speed ) ) )    for n in range(n_servo) ]
     # ne pas recréer la liste mais réécrire dedans pour opti ???
 
     # Angle safe check (can slow execution)
@@ -111,7 +156,7 @@ for i in range(1,100000):
     # Wait next tick
     while( time() < t+i*tick_period ):    # tick => i
         # pass
-        if ( tick%10 == 0 ):
+        if ( tick%10 == 0 ):    #
             for event in pygame.event.get():    #Attente des événements
                 # if event.type == QUIT:
                 #     continuer = 0
