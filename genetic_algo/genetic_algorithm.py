@@ -90,13 +90,36 @@ def createChild(individual1, individual2):
 	
 	return child
 
+
+"""
+Create number_of_child children from the breeders generation
+"""
 def createChildren(breeders, number_of_child):
 	nextPopulation = []
 	for i in range(len(breeders)/2):
 		for j in range(number_of_child):
-			nextPopulation.append(createChild(breeders[i], breeders[len(breeders) -1 -i]))
+			nextPopulation.append(createCild(breeders[i], breeders[len(breeders) -1 -i]))
 	
 	return nextPopulation
+
+"""
+Randomly mutates the values of a snake
+"""
+def mutateSnake(snake):
+	modification_variance = [200,100]
+
+	item_modified = random.randint(0,1) #Either modify amplitude or offset
+	# Modify it randomly AROUND it's value following a gaussian
+	snake[item_modified] = random.gaussian(snake[item_modified], modification_variance)
+
+	return snake
+	
+def mutatePopulation(population, chance_of_mutation):
+	for i in range(len(population)):
+		if random.random() * 100 < chance_of_mutation:
+			population[i] = mutateWord(population[i])
+
+	return population
 	
 ## Main
 
