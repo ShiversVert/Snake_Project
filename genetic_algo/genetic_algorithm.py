@@ -9,10 +9,12 @@ take a snake (amplitude, offset), processes it and gives it's score
 
 The score function must also write the performance of the snake in a file
 """
+
 def evaluate(snake):
-	#score = sys.maxint
-	score = random.randint(0,100)
-	#TODO
+	#score = random.randint(0,100)
+	#fonction(amplitude, offset) min in (300,512)
+
+	score = sqrt(snake[0]^2 + 300) + sqrt(snake[1]^2 + 512)
 	return(score)
 
 
@@ -114,17 +116,29 @@ def mutateSnake(snake):
 
 	return snake
 	
-def mutatePopulation(population, chance_of_mutation):
+"""
+Randomly mutates the population given with a probability chance_of_mutation
+"""
+def mutatePopulation(population, chance_of_mutatsion):
 	for i in range(len(population)):
-		if random.random() * 100 < chance_of_mutation:
-			population[i] = mutateWord(population[i])
+		if random.random() < chance_of_mutation:
+			population[i] = mutateSnake(population[i])
 
 	return population
-	
+
 ## Main
 
-pop = generatePopulation(10)
-print(pop)
-perf = computePerfGeneration(pop)
+def genetic_algorithm(populationSize, number_of_generations):
+
+	pop = generatePopulation(populationSize)
+	
+	for generation in range(number_of_generations):
+		print("Generation no : " + generation)
+		perf = computePerfGeneration(pop)
+		
+		#TODO
+
+
+
 print(perf)
 
