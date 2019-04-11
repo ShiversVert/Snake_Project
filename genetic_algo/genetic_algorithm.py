@@ -1,0 +1,107 @@
+from math import *
+import sys
+import random
+import operator
+
+"""
+#TODO
+take a snake (amplitude, offset), processes it and gives it's score
+
+The score function must also write the performance of the snake in a file
+"""
+def evaluate(snake):
+	#score = sys.maxint
+	score = random.randint(0,100)
+	#TODO
+	return(score)
+
+
+
+"""
+Generate a random amplitude and offset that compose a snake 
+
+@returns amplitude, offset
+"""
+def generateSnake():
+	amplitude = random.randint(1,600)
+	offset = random.randint(0,1023)
+
+	return(amplitude, offset)
+
+"""
+Generates a population of size sizePopulation and returns it in a list
+"""
+def generatePopulation(sizePopulation):
+	population = []
+	i = 0
+	while i < sizePopulation:
+		population.append(generateSnake())
+		i+=1
+	
+	return population
+
+"""
+Test every Snake of the population to give them a score and sort
+the population by increasing order 
+"""
+
+def computePerfGeneration(population):
+	populationPerf = {}
+	for snake in population:
+		populationPerf[snake] = evaluate(snake)
+
+	return sorted(populationPerf.items(), key = operator.itemgetter(1))
+
+
+"""
+Select the (int) "best_sample" snakes from the sorted population and some few lucky snakes randomly 
+(lucky_few selected randomly)
+"""
+def selectFromPopulation(populationSorted, best_sample, lucky_few):
+	nextGeneration = []
+	for i in range(best_sample):
+		nextGeneration.append(populationSorted[i][0])
+	for i in range(lucky_few):
+		nextGeneration.append(random.choice(populationSorted)[0])
+	random.shuffle(nextGeneration)
+	
+	return nextGeneration
+
+
+"""
+Hybrids the two snake parents in order to create a child
+"""
+
+def createChild(individual1, individual2):
+	#TODO
+
+	"""
+	Possible solution : 
+		Amplitude = mean of their amplitude 
+		Offset = mean of their offset 
+
+	Should we ponderate by their score ?
+	How to add some randomness ? => Ponderated randomly thanks to a gaussian ?
+	"""
+
+	amplitude = (individual1[0] + individual2[0])/2
+	offset = (individual1[1] + individual2[1])/2
+	child = (amplitude, offset)
+	
+	return child
+
+def createChildren(breeders, number_of_child):
+	nextPopulation = []
+	for i in range(len(breeders)/2):
+		for j in range(number_of_child):
+			nextPopulation.append(createChild(breeders[i], breeders[len(breeders) -1 -i]))
+	
+	return nextPopulation
+	
+## Main
+
+pop = generatePopulation(10)
+print(pop)
+perf = computePerfGeneration(pop)
+print(perf)
+
