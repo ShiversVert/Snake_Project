@@ -84,10 +84,12 @@ def createChild(individual1, individual2):
 
 	Should we ponderate by their score ?
 	How to add some randomness ? => Ponderated randomly thanks to a gaussian ?
+		gaussian with varian = score ?
 	"""
-
-	amplitude = (individual1[0] + individual2[0])/2
-	offset = (individual1[1] + individual2[1])/2
+	pond_amplitude = random.random()
+	pond_offset = random.random()
+	amplitude = pond_amplitude * individual1[0] + (1-pond_amplitude) * individual2[0]
+	offset = pond_offset * individual1[1] + (1 - pond_offset) * individual2[1]
 	child = (amplitude, offset)
 	
 	return child
@@ -125,6 +127,16 @@ def mutatePopulation(population, chance_of_mutatsion):
 			population[i] = mutateSnake(population[i])
 
 	return population
+
+"""
+Saves a generation in the file file_name
+"""
+
+def saveGeneration(sorted_population, generation_index, file_name):
+	file = open(file_name, "w+")
+	file.write(strcat("generation ", str(generation_index+1)))
+	for i in range(len(sorted_population)):
+		f.write("%d, %d, %d\n", sorted_population[0], sorted_population[1], sorted_population[2])
 
 ## Main
 
