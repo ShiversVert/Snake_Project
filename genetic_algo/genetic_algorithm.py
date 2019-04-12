@@ -2,6 +2,8 @@ from math import *
 import sys
 import random
 import operator
+import numpy as np
+import matplotlib.pyplot as plt
 
 """
 #TODO
@@ -14,8 +16,8 @@ def evaluate(snake):
 	#score = random.randint(0,100)
 	#fonction(amplitude, offset) min in (300,512)
 
-	score = sqrt(snake[0]^2 + 300) + sqrt(snake[1]^2 + 512)
-	return(score)
+	score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
+	return(int(score))
 
 
 
@@ -33,7 +35,7 @@ def generateSnake():
 """
 Generates a population of size sizePopulation and returns it in a list
 """
-def generatePopulation(sizePopulation):
+def generateFirstPopulation(sizePopulation):
 	population = []
 	i = 0
 	while i < sizePopulation:
@@ -90,67 +92,121 @@ def createChild(individual1, individual2):
 	pond_offset = random.random()
 	amplitude = pond_amplitude * individual1[0] + (1-pond_amplitude) * individual2[0]
 	offset = pond_offset * individual1[1] + (1 - pond_offset) * individual2[1]
-	child = (amplitude, offset)
+
+	child = (int(amplitude), int(offset))
 	
 	return child
 
 
 """
 Create number_of_child children from the breeders generation
+number_of_child is the number of children for a given couple. len(breeders)/2 couples are created
 """
-def createChildren(breeders, number_of_child):
+def createChildren(breeders, children_per_couple):
 	nextPopulation = []
-	for i in range(len(breeders)/2):
-		for j in range(number_of_child):
-			nextPopulation.append(createCild(breeders[i], breeders[len(breeders) -1 -i]))
+	for i in range(int(len(breeders)/2)):
+		for j in range(children_per_couple):
+			nextPopulation.append(createChild(breeders[i], breeders[len(breeders) -1 -i]))
 	
 	return nextPopulation
 
 """
 Randomly mutates the values of a snake
 """
-def mutateSnake(snake):
-	modification_variance = [200,100]
+def mutateSnake(snake, modification_variance):
 
 	item_modified = random.randint(0,1) #Either modify amplitude or offset
 	# Modify it randomly AROUND it's value following a gaussian
-	snake[item_modified] = random.gaussian(snake[item_modified], modification_variance)
-
-	return snake
+	mutation = random.gauss(snake[item_modified], modification_variance[item_modified])
+	if (item_modified == 0):
+	 	return(int(mutation), snake[1])
+	return (snake[0], int(mutation))
 	
 """
 Randomly mutates the population given with a probability chance_of_mutation
 """
-def mutatePopulation(population, chance_of_mutatsion):
+def mutatePopulation(population, chance_of_mutation, modification_variance = [10,5]):
 	for i in range(len(population)):
 		if random.random() < chance_of_mutation:
-			population[i] = mutateSnake(population[i])
+			population[i] = mutateSnake(population[i], modification_variance)
 
 	return population
 
 """
-Saves a generation in the file file_name
+Check individual for unexpected values
 """
 
+def checkSnake(snake, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFSET = 312, MAX_OFFSET = 712):
+	amplitude, offset = snake 
+	if (amplitude < MIN_AMPLITUDE): 
+		amplitude = MIN_AMPLITUDE
+	elif (amplitude > MAX_AMPLITUDE): 
+		amplitude = MAX_AMPLITUDE
+	if (offset < MIN_OFFSET): 
+		offset = MIN_OFFSET
+	elif (offset > MAX_OFFSET): 
+		offset = MAX_OFFSET
+
+	return(amplitude, offset)
+"""
+Check population for unexpected values
+"""
+def checkPopulation(population, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFSET = 312, MAX_OFFSET = 712):
+	for i in range(len(population)) :
+		population[i] = checkSnake(population[i])
+
+	return population
+
+
+"""
+Saves a generation in the file file_name
+"""
 def saveGeneration(sorted_population, generation_index, file_name):
-	file = open(file_name, "w+")
-	file.write(strcat("generation ", str(generation_index+1)))
+	file = open(file_name, "a+")
+	gen = "generation " + str(generation_index+1) + '\n'
+	file.write(gen)
 	for i in range(len(sorted_population)):
-		f.write("%d, %d, %d\n", sorted_population[0], sorted_population[1], sorted_population[2])
+		snake = str(sorted_population[i][0][0]) + ';' + str(sorted_population[i][0][1]) + ';' + str(sorted_population[i][1]) + '\n'
+		file.write(snake)
+	file.close()
+
+def meanVarScore(populationWithScore, mean, var):
+	scores = [snake[1] for snake in populationWithScore]
+	
+	mean.append(np.mean(scores))
+	var.append(np.var(scores)/2)
 
 ## Main
 
-def genetic_algorithm(populationSize, number_of_generations):
+def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation):
+	mean = []
+	var = []
 
-	pop = generatePopulation(populationSize)
+	pop = generateFirstPopulation(populationSize)
 	
 	for generation in range(number_of_generations):
-		print("Generation no : " + generation)
+		print("Generation no : " + str(generation+1))
 		perf = computePerfGeneration(pop)
-		
-		#TODO
+		#print(perf)
+		saveGeneration(perf, generation, "test1.csv")
+		meanVarScore(perf, mean, var)#Saving mean and var
 
+		sample = selectFromPopulation(perf, best_sample, lucky_few)
 
+		pop = createChildren(sample, children_per_couple)
+		pop = mutatePopulation(pop, chance_of_mutation)
+		pop = checkPopulation(pop)
 
-print(perf)
+	return mean,var
 
+mean, var = genetic_algorithm(100, 200, 100, 4, 10, 0.1)
+
+fig = plt.figure(1)
+plt.errorbar(range(len(mean)), mean, var, ecolor = 'red')
+plt.xlabel("Generation")
+plt.ylabel("Score moyen")
+plt.xlim(5,len(mean))
+plt.ylim(-20,30)
+plt.grid()
+
+plt.show()
