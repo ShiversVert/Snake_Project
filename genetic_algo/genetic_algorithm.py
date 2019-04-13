@@ -5,6 +5,28 @@ import operator
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+########################
+##########INIT##########
+########################
+
+DEBUG = True
+white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
+
+sensibility = (20, 20, 20)
+exit = False;get_color = False
+a = 0; b = 0;
+target_pos = (0,0)
+
+display_width = 1280; display_height = 720
+
+pygame.init()
+pygame.camera.init()
+
+
+#########################
+########FUNCTIONS########
+#########################
 """
 #TODO
 take a snake (amplitude, offset), processes it and gives it's score
@@ -13,8 +35,6 @@ The score function must also write the performance of the snake in a file
 """
 
 def evaluate(snake):
-	#score = random.randint(0,100)
-	#fonction(amplitude, offset) min in (300,512)
 
 	score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
 	return(int(score))
@@ -77,8 +97,6 @@ Hybrids the two snake parents in order to create a child
 """
 
 def createChild(individual1, individual2):
-	#TODO
-
 	"""
 	Possible solution : 
 		Amplitude = mean of their amplitude 
@@ -199,14 +217,18 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	return mean,var
 
-mean, var = genetic_algorithm(100, 200, 100, 4, 10, 0.1)
+########################
+##########MAIN##########
+########################
+	
+mean, var = genetic_algorithm(100, 200, 100, 5, 10, 0.1)
 
 fig = plt.figure(1)
 plt.errorbar(range(len(mean)), mean, var, ecolor = 'red')
 plt.xlabel("Generation")
 plt.ylabel("Score moyen")
-plt.xlim(5,len(mean))
-plt.ylim(-20,30)
+plt.xlim(0,len(mean))
+#plt.ylim(-20,30)
 plt.grid()
 
 plt.show()
