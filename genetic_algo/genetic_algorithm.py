@@ -4,11 +4,12 @@ import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
+from "../ImageProcessing/imageprocessing_functions.py" import *
 
 
-########################
-##########INIT##########
-########################
+################################################################
+##############################INIT##############################
+################################################################
 
 DEBUG = True
 white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
@@ -20,13 +21,9 @@ target_pos = (0,0)
 
 display_width = 1280; display_height = 720
 
-pygame.init()
-pygame.camera.init()
-
-
-#########################
-########FUNCTIONS########
-#########################
+#################################################################
+############################FUNCTIONS############################
+#################################################################
 """
 #TODO
 take a snake (amplitude, offset), processes it and gives it's score
@@ -34,11 +31,17 @@ take a snake (amplitude, offset), processes it and gives it's score
 The score function must also write the performance of the snake in a file
 """
 
-def evaluate(snake):
+def evaluate(snake, display_window, sensibility = (20,20,20), pixel_distance_to_go = 300):
 
-	score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
-	return(int(score))
+	#score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
+	#return(int(score))
+	a, b, target = getTargetLocation(display_window, sensibility, pixel_distance_to_go)
 
+	#FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
+
+	getScore(target, a, b, display_window)
+
+	return(0)
 
 
 """
@@ -180,8 +183,9 @@ def checkPopulation(population, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFS
 Saves a generation in the file file_name
 """
 def saveGeneration(sorted_population, generation_index, file_name):
+	gen = "Generation_" + str(generation_index+1) + ".txt" 
 	file = open(file_name, "a+")
-	gen = "generation " + str(generation_index+1) + '\n'
+	gen += '\n'
 	file.write(gen)
 	for i in range(len(sorted_population)):
 		snake = str(sorted_population[i][0][0]) + ';' + str(sorted_population[i][0][1]) + ';' + str(sorted_population[i][1]) + '\n'
@@ -217,10 +221,12 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	return mean,var
 
-########################
-##########MAIN##########
-########################
-	
+################################################################
+##############################MAIN##############################
+################################################################
+
+initImage()
+
 mean, var = genetic_algorithm(100, 200, 100, 5, 10, 0.1)
 
 fig = plt.figure(1)
