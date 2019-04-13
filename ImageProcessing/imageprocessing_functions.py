@@ -14,9 +14,6 @@ import numpy as np
 import pygame.surfarray
 import matplotlib.pyplot as plt
 from random import *
-from statistics import mean
-from termcolor import colored
-from "../ImageProcessing/imageprocessing_functions.py" import *
 
 DEBUG = True
 white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
@@ -36,7 +33,7 @@ def draw_linear(a, b,color, display_width, display_window):
 Initiate image processing and return the display window
 """
 
-def init_image():
+def initImage():
 	pygame.init()
 	pygame.camera.init()
 
@@ -56,7 +53,7 @@ def init_image():
 	return(display_window, display_width, display_height)
 
 
-def getTargetLocation(display_window, green, red, sensibility, pixel_distance_to_go = 300, head_color='green'):
+def getTargetLocation(display_window, sensibility, pixel_distance_to_go = 300, head_color=green, green = green, red = red):
 	#Get image and displays it
 	img = cam.get_image();
 	img = pygame.transform.scale(img, (display_width, display_height))
@@ -86,9 +83,9 @@ def getTargetLocation(display_window, green, red, sensibility, pixel_distance_to
 	a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
 	b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
 
-	if head_color == 'green' :
+	if head_color == green :
 		vect_directeur = np.subtract(green_pos, red_pos)
-	elif head_color == 'red':
+	elif head_color == red:
 		vect_directeur = np.subtract(red_pos, green_pos)
 	else :
 		return(0,0)
@@ -100,21 +97,23 @@ def getTargetLocation(display_window, green, red, sensibility, pixel_distance_to
 
 	return(a, b, center)
 
-def getScore(x_target, y_target, display_window):
+def getScore(target, a, b, display_window, head_color = green):
 	img = cam.get_image();
 	img = pygame.transform.scale(img, (display_width, display_height))
 	display_window.blit(img, (0, 0))
 	pygame.display.flip()
 
-	mask_green = pygame.mask.from_threshold(display_window, green, sensibility)
-
+	mask_head = pygame.mask.from_threshold(display_window, head_color, sensibility)
 	#Get their center of mass
-	pos_green = mask_green.centroid()
+	pos_head = mask_head.centroid()
 
-	if(pos_green == (0,0)):
-		distance = sys.maxint;
+	if(pos_head == (0,0)):
+		return(sys.maxint) #If head is not detected
 	else
-	#TODO
 	
-	return(distance)
+	#TODO Calculate the score in function of the (a,b) initial vector of the snake and the target location
+
+	
+	return(0)
+
 
