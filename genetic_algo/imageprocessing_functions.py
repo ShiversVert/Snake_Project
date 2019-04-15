@@ -108,18 +108,18 @@ def getScore(target, a, b, display_window, head_color = green):
 	#Get the center of mass of the head
 	pos_head = mask_head.centroid()
 
-    #Coefficent of ponderation of the ellipsis
+	#Coefficent of ponderation of the ellipsis
 	alpha = 1.5
 
 	if(pos_head == (0,0)):
 		return(sys.maxint) #If head is not detected
-	else
-	if(a == 0):
-		if(b<0):
-			theta = -(math.pi)/2
-		else
-			theta = math.pi/2
-		else
+	else:
+		if(a == 0):
+			if(b<0):
+				theta = -(math.pi)/2
+			else:
+				theta = math.pi/2
+		else:
 			theta = atan(b/a) #Keep it in radian
 			#a and b are normalized for the calculus
 			a_norm = a/(np.sqrt(float (a**2 + b**2)))
@@ -132,4 +132,4 @@ def getScore(target, a, b, display_window, head_color = green):
 			print("Valeur du score : ", score)
 		return(score)
 
-    return(sys.maxint) #Security return : does not consider this try
+	return(sys.maxint) #Security return : does not consider this try
