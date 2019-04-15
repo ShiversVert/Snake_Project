@@ -47,70 +47,85 @@ def initImage():
 	camlist = pygame.camera.list_cameras()
 
 	if camlist:
-	    cam = pygame.camera.Camera(camlist[1], (1280, 720))
+	    cam = pygame.camera.Camera(camlist[0], (1280, 720))
 	else:
 	    cam = pygame.camera.Camera("/dev/video0", (640, 480))
 
 	cam.start()
 
-	return(display_window, display_width, display_height)
+	return(display_window, display_width, display_height, cam)
 
 
-def getTargetLocation(display_window, sensibility, pixel_distance_to_go = 300, head_color=green, green = green, red = red):
+def getTargetLocation(display_window, sensibility, cam,display_width, display_height, pixel_distance_to_go = 850, head_color=green, green = green, red = red):
 	#Get image and displays it
-	img = cam.get_image();
-	img = pygame.transform.scale(img, (display_width, display_height))
-	display_window.blit(img, (0, 0))
-	pygame.display.flip()
-
-
-	#Detect green and red on the image
-	mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
-	mask_green = pygame.mask.from_threshold(display_window, green, sensibility)
-
-	#Get their center of mass
-	pos_red = mask_red.centroid()
-	pos_green = mask_green.centroid()
 	target_of_sight = True
 	
 	while(target_of_sight):
+		img = cam.get_image()
+		img = pygame.transform.scale(img, (display_width, display_height))
+		display_window.blit(img, (0, 0))
+		pygame.display.flip()
+
+
+		#Detect green and red on the image
+		mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
+		mask_green = pygame.mask.from_threshold(display_window, green, sensibility)
+
+		#Get their center of mass
+		pos_red = mask_red.centroid()
+		pos_green = mask_green.centroid()
+	
 		while (pos_red == (0,0)):
 			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
-			input()
+			raw_input()	
+			img = cam.get_image()
+			img = pygame.transform.scale(img, (display_width, display_height))
+			display_window.blit(img, (0, 0))
+			pygame.display.flip()
+
 			mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
 			pos_red = mask_red.centroid()
 		
 		while (pos_green == (0,0)):
-			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
-			intput()
+			print("Impossible de detecter des pixels verts\n Replacez le serpent et appuyez sur entrée")
+			raw_input()	
+			img = cam.get_image()
+			img = pygame.transform.scale(img, (display_width, display_height))
+			display_window.blit(img, (0, 0))
+			pygame.display.flip()
+
 			mask_green = pygame.mask.from_threshold(display_window, green, sensibility)
 			pos_green = mask_green.centroid()
 
 		#CAlcul of target
-		a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
+		if(pos_green[0] == pos_red[0]):
+			a = pos_green[1] - pos_red[1]
+		else:
+			a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
 		b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
 
 		if head_color == green :
-			vect_directeur = np.subtract(green_pos, red_pos)
+			vect_directeur = np.subtract(pos_green, pos_red)
 		elif head_color == red:
-			vect_directeur = np.subtract(red_pos, green_pos)
+			vect_directeur = np.subtract(pos_red, pos_green)
 		else :
 			return(0,0)
 
 		norm = np.sqrt(float(vect_directeur[0]*vect_directeur[0] + vect_directeur[1] * vect_directeur[1]))
 
-		target_coordinates = vect_directeur/ norm * distance_to_go + green_pos
-		target_coordinates = center.astype(int)
+		target_coordinates = vect_directeur/ norm * pixel_distance_to_go + pos_green
+		target_coordinates = target_coordinates.astype(int)
 
 		if (target_coordinates[0]>display_width or target_coordinates[0] < 0 or target_coordinates[1]>display_height or target_coordinates[1] < 0):
 			print("La cible est hors de l'ecran, repositionnez le serpent et appuyez sur entrée")
-			input()
+			raw_input()
 		else:
 			target_of_sight = False
 	return(a, b, target_coordinates)
 
-def getScore(target, a, b, display_window, head_color = green):
-	img = cam.get_image();
+def getScore(target, a, b,sensibility, display_window, cam,display_width, display_height, head_color = green):
+	
+	img = cam.get_image()
 	img = pygame.transform.scale(img, (display_width, display_height))
 	display_window.blit(img, (0, 0))
 	pygame.display.flip()
@@ -127,20 +142,21 @@ def getScore(target, a, b, display_window, head_color = green):
 	else:
 		if(a == 0):
 			if(b<0):
-				theta = -(math.pi)/2
+				theta = -(pi)/2
 			else:
-				theta = math.pi/2
+				theta = pi/2
 		else:
 			theta = atan(b/a) #Keep it in radian
-			#a and b are normalized for the calculus
-			a_norm = a/(np.sqrt(float (a**2 + b**2)))
-			b_norm = b/(np.sqrt(float (a**2 + b**2)))
 
-			distance_to_go = np.sqrt(float( (target[0]-a_norm)**2 + (target[1]-b_norm)**2) )
-			score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
-			#Check le - devant le x dans la deuxie partie
+		#a and b are normalized for the calculus
+		a_norm = a/(np.sqrt(float (a**2 + b**2)))
+		b_norm = b/(np.sqrt(float (a**2 + b**2)))
 
-			print("Valeur du score : ", score)
+		distance_to_go = np.sqrt(float( (target[0]-a_norm)**2 + (target[1]-b_norm)**2) )
+		score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
+		#Check le - devant le x dans la deuxie partie
+
+		print("Valeur du score : ", score)
 		return(score)
 
 	return(sys.maxint) #Security return : does not consider this try

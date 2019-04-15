@@ -97,11 +97,13 @@ def init_snake(serial_port   = '/dev/ttyUSB0',
 
     # Angle safe check (can slow execution)
     assert abs(max(goal_pos_vect)-512) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
+    """
     for n in range(n_servo):
         sum = 0
         for z in range(n,n_servo):
             sum += (goal_pos_vect[z]-512)
             assert sum < 1024./300.*200. , "Le serpent allait se mordre la queue"
+    """
     # Move the snake in init position
     for n in range(n_servo):
         sleep(t_sleep)
@@ -164,12 +166,13 @@ def move_snake(serial_port = '/dev/ttyUSB0',
 
         # Angle safe check (can slow execution)
         assert abs(max(goal_pos_vect)-offset) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
+        """
         for n in range(n_servo):
             sum = 0
             for z in range(n,n_servo):
                 sum += (goal_pos_vect[z]-512)
                 assert sum < 1024./300.*200. , "Le serpent allait se mordre la queue"
-
+        """
         # Gestion control serpent
         """
         for event in pygame.event.get():    #Attente des événements

@@ -7,7 +7,7 @@ import operator
 import numpy as np
 import matplotlib.pyplot as plt
 from imageprocessing_functions import *
-from imageprocessing_functions import *
+from move_function import *
 
 
 ################################################################
@@ -33,17 +33,19 @@ take a snake (amplitude, offset), processes it and gives it's score
 The score function must also write the performance of the snake in a file
 """
 
-def evaluate(snake, display_window, sensibility = (20,20,20), pixel_distance_to_go = 300):
+def evaluate(snake, display_window, cam, display_width, display_height, sensibility = (20,20,20), pixel_distance_to_go = 300):
 
 	#score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
 	#return(int(score))
-	init_snake(id_bloque = 10, angle_bloque = 700, amplitude= snake[0], offset = snake[1])
-	a, b, target = getTargetLocation(display_window, sensibility, pixel_distance_to_go)
+	print("Evaluation de l'individu")
+	print(snake)
+	init_snake(id_bloque = 10, angle_bloque = 700, amplitude = snake[0], offset = snake[1])
+	a, b, target = getTargetLocation(display_window, sensibility, cam, display_width, display_height, pixel_distance_to_go)
 
 #FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
 	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
 
-	getScore(target, a, b, display_window)
+	getScore(target, a, b, sensibility, display_window, cam, display_width, display_height)
 
 	return(0)
 
@@ -54,8 +56,8 @@ Generate a random amplitude and offset that compose a snake
 @returns amplitude, offset
 """
 def generateSnake():
-	amplitude = random.randint(1,600)
-	offset = random.randint(0,1023)
+	amplitude = randint(200,500)
+	offset = randint(460,564)
 
 	return(amplitude, offset)
 
@@ -76,10 +78,10 @@ Test every Snake of the population to give them a score and sort
 the population by increasing order 
 """
 
-def computePerfGeneration(population):
+def computePerfGeneration(population, display_window, cam, display_width, display_height):
 	populationPerf = {}
 	for snake in population:
-		populationPerf[snake] = evaluate(snake)
+		populationPerf[snake] = evaluate(snake, display_window, cam, display_width, display_height)
 
 	return sorted(populationPerf.items(), key = operator.itemgetter(1))
 
@@ -93,8 +95,8 @@ def selectFromPopulation(populationSorted, best_sample, lucky_few):
 	for i in range(best_sample):
 		nextGeneration.append(populationSorted[i][0])
 	for i in range(lucky_few):
-		nextGeneration.append(random.choice(populationSorted)[0])
-	random.shuffle(nextGeneration)
+		nextGeneration.append(choice(populationSorted)[0])
+	shuffle(nextGeneration)
 	
 	return nextGeneration
 
@@ -113,8 +115,8 @@ def createChild(individual1, individual2):
 	How to add some randomness ? => Ponderated randomly thanks to a gaussian ?
 		gaussian with varian = score ?
 	"""
-	pond_amplitude = random.random()
-	pond_offset = random.random()
+	pond_amplitude = random()
+	pond_offset = random()
 	amplitude = pond_amplitude * individual1[0] + (1-pond_amplitude) * individual2[0]
 	offset = pond_offset * individual1[1] + (1 - pond_offset) * individual2[1]
 
@@ -140,9 +142,9 @@ Randomly mutates the values of a snake
 """
 def mutateSnake(snake, modification_variance):
 
-	item_modified = random.randint(0,1) #Either modify amplitude or offset
+	item_modified = randint(0,1) #Either modify amplitude or offset
 	# Modify it randomly AROUND it's value following a gaussian
-	mutation = random.gauss(snake[item_modified], modification_variance[item_modified])
+	mutation = gauss(snake[item_modified], modification_variance[item_modified])
 	if (item_modified == 0):
 	 	return(int(mutation), snake[1])
 	return (snake[0], int(mutation))
@@ -150,9 +152,9 @@ def mutateSnake(snake, modification_variance):
 """
 Randomly mutates the population given with a probability chance_of_mutation
 """
-def mutatePopulation(population, chance_of_mutation, modification_variance = [10,5]):
+def mutatePopulation(population, chance_of_mutation, modification_variance = [10,	5]):
 	for i in range(len(population)):
-		if random.random() < chance_of_mutation:
+		if random() < chance_of_mutation:
 			population[i] = mutateSnake(population[i], modification_variance)
 
 	return population
@@ -161,7 +163,7 @@ def mutatePopulation(population, chance_of_mutation, modification_variance = [10
 Check individual for unexpected values
 """
 
-def checkSnake(snake, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFSET = 312, MAX_OFFSET = 712):
+def checkSnake(snake, MIN_AMPLITUDE = 200, MAX_AMPLITUDE = 500, MIN_OFFSET = 460, MAX_OFFSET = 564):
 	amplitude, offset = snake 
 	if (amplitude < MIN_AMPLITUDE): 
 		amplitude = MIN_AMPLITUDE
@@ -176,7 +178,7 @@ def checkSnake(snake, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFSET = 312, 
 """
 Check population for unexpected values
 """
-def checkPopulation(population, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFSET = 312, MAX_OFFSET = 712):
+def checkPopulation(population, MIN_AMPLITUDE = 200, MAX_AMPLITUDE = 500, MIN_OFFSET = 460, MAX_OFFSET = 564):
 	for i in range(len(population)) :
 		population[i] = checkSnake(population[i])
 
@@ -204,7 +206,7 @@ def meanVarScore(populationWithScore, mean, var):
 
 # Main
 
-def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation):
+def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window, cam, display_width, display_height):
 	mean = []
 	var = []
 
@@ -212,7 +214,7 @@ def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, l
 	
 	for generation in range(number_of_generations):
 		print("Generation no : " + str(generation+1))
-		perf = computePerfGeneration(pop)
+		perf = computePerfGeneration(pop, display_window, cam, display_width, display_height)
 		#print(perf)
 		saveGeneration(perf, generation, "test1.csv")
 		meanVarScore(perf, mean, var)#Saving mean and var
@@ -230,9 +232,9 @@ def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, l
 ################################################################
 firstPopulationSize = 20; number_of_generations = 10; best_sample = 5; 
 lucky_few = 2; children_per_couple = 4;chance_of_mutation = 0.15;
-initImage()
+display_window, display_width, display_height, cam = initImage()
 
-mean, var = genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation)
+mean, var = genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window,cam, display_width, display_height)
 
 fig = plt.figure(1)
 plt.errorbar(range(len(mean)), mean, var, ecolor = 'red')
