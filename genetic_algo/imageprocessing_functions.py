@@ -69,34 +69,43 @@ def getTargetLocation(display_window, sensibility, pixel_distance_to_go = 300, h
 	#Get their center of mass
 	pos_red = mask_red.centroid()
 	pos_green = mask_green.centroid()
-
-	while (pos_red == (0,0)):
-		print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
-		input()
-		pos_red = mask_red.centroid()
+	target_of_sight = True
 	
-	while (pos_green == (0,0)):
-		print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
-		intput()
-		pos_green = mask_green.centroid()
+	while(target_of_sight):
+		while (pos_red == (0,0)):
+			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
+			input()
+			mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
+			pos_red = mask_red.centroid()
+		
+		while (pos_green == (0,0)):
+			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
+			intput()
+			mask_green = pygame.mask.from_threshold(display_window, green, sensibility)
+			pos_green = mask_green.centroid()
 
+		#CAlcul of target
+		a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
+		b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
 
-	a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
-	b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
+		if head_color == green :
+			vect_directeur = np.subtract(green_pos, red_pos)
+		elif head_color == red:
+			vect_directeur = np.subtract(red_pos, green_pos)
+		else :
+			return(0,0)
 
-	if head_color == green :
-		vect_directeur = np.subtract(green_pos, red_pos)
-	elif head_color == red:
-		vect_directeur = np.subtract(red_pos, green_pos)
-	else :
-		return(0,0)
+		norm = np.sqrt(float(vect_directeur[0]*vect_directeur[0] + vect_directeur[1] * vect_directeur[1]))
 
-	norm = np.sqrt(float(vect_directeur[0]*vect_directeur[0] + vect_directeur[1] * vect_directeur[1]))
+		target_coordinates = vect_directeur/ norm * distance_to_go + green_pos
+		target_coordinates = center.astype(int)
 
-	target_coordinates = vect_directeur/ norm * distance_to_go + green_pos
-	target_coordinates = center.astype(int)
-
-	return(a, b, center)
+		if (target_coordinates[0]>display_width or target_coordinates[0] < 0 or target_coordinates[1]>display_height or target_coordinates[1] < 0):
+			print("La cible est hors de l'ecran, repositionnez le serpent et appuyez sur entrée")
+			input()
+		else:
+			target_of_sight = False
+	return(a, b, target_coordinates)
 
 def getScore(target, a, b, display_window, head_color = green):
 	img = cam.get_image();
