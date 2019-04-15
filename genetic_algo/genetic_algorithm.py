@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+
 from math import *
 import sys
 import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
-from imageprocessing_functions.py import *
+from imageprocessing_functions import *
+from imageprocessing_functions import *
 
 
 ################################################################
@@ -36,7 +39,7 @@ def evaluate(snake, display_window, sensibility = (20,20,20), pixel_distance_to_
 	#return(int(score))
 	init_snake(id_bloque = 10, angle_bloque = 700, amplitude= snake[0], offset = snake[1])
 	a, b, target = getTargetLocation(display_window, sensibility, pixel_distance_to_go)
-	
+
 #FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
 	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
 
@@ -199,7 +202,7 @@ def meanVarScore(populationWithScore, mean, var):
 	mean.append(np.mean(scores))
 	var.append(np.var(scores)/2)
 
-## Main
+# Main
 
 def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation):
 	mean = []

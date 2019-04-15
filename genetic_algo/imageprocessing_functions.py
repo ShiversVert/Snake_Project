@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Ce programme permet de recuperer une image grace a la webcam.
 Recuperre ensuite les references de rouge et de vert dans le coins superieurs droits et gauche.
