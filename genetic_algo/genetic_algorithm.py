@@ -34,9 +34,11 @@ def evaluate(snake, display_window, sensibility = (20,20,20), pixel_distance_to_
 
 	#score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
 	#return(int(score))
+	init_snake(id_bloque = 10, angle_bloque = 700, amplitude= snake[0], offset = snake[1])
 	a, b, target = getTargetLocation(display_window, sensibility, pixel_distance_to_go)
-
-	#FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
+	
+#FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
+	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
 
 	getScore(target, a, b, display_window)
 
