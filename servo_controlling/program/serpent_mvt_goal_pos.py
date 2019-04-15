@@ -11,15 +11,7 @@ pygame.font.init()
 myfont = pygame.font.SysFont('Arial', 30)
 fenetre = pygame.display.set_mode((640, 480))
 
-# TODO opti float()
-
-# t = time()    # DEBUG
-# for i in range(1000):
-#     print (time() - t, "coucou{}".format(i))
-#####  0.00276 sec  #####
-# assert 0
-
-def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=0):
+def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=0.05):
     """
     If status_return disable => return nothing when new set
     If status_return enable  => return status packet when new set
@@ -39,7 +31,7 @@ def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=
         print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
         sleep(t_sleep)
 
-def multi_set_velocity(ser, servo_id, v, t_init_sleep=0.1, t_sleep=0):
+def multi_set_velocity(ser, servo_id, v, t_init_sleep=0.1, t_sleep=0.05):
     """
     need status return enable
 
@@ -61,7 +53,7 @@ def multi_set_velocity(ser, servo_id, v, t_init_sleep=0.1, t_sleep=0):
         dynamixel.set_velocity(ser, servo_id[n] , velocity[n])
         sleep(t_sleep)
 
-def multi_init_pos(t_final_sleep=2, t_sleep=0.1):
+def multi_init_pos(t_final_sleep=2, t_sleep=0.05):
     # init goal position vector
     global goal_pos_vect
     goal_pos_vect = [ int( round( offset + amplitude_norm * sin( omega*n ) ) )    for n in range(n_servo) ]
@@ -73,6 +65,7 @@ def multi_init_pos(t_final_sleep=2, t_sleep=0.1):
         dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
 
     sleep(t_final_sleep)
+
 
 ############################
 
@@ -137,8 +130,8 @@ for i in range(1,nb_tick):
     for n in range(n_servo):
 
         # TEST BLOCAGE
-        if ( servo_id[n] == 10):
-            continue
+        # if ( servo_id[n] == 10):
+        #     continue
 
         # dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
         dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
@@ -154,37 +147,42 @@ for i in range(1,nb_tick):
     # Angle safe check (can slow execution)
     assert abs(max(goal_pos_vect)-offset) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
 
+    # Gestion control serpent
+    for event in pygame.event.get():    #Attente des événements
+        # if event.type == QUIT:
+        #     continuer = 0
+
+        if (event.type == KEYDOWN):
+            if   (event.key == K_UP   ):
+                move = min( move+1, 1)
+            elif (event.key == K_DOWN ):
+                move = max( move-1, -1)
+            elif (event.key == K_LEFT ):
+                if (offset > 460):
+                    offset -= 5
+            elif (event.key == K_RIGHT):
+                if (offset < 564):
+                    offset += 5
+
+    textsurface = myfont.render("OFFSET = {}          ".format(offset), False, (255, 255, 255), (0,0,0) )
+    fenetre.blit(textsurface,(0,0))
+
+    if   (move== 0):
+        textsurface = myfont.render("DON'T MOVE           ", False, (255, 255, 255), (0,0,0) )
+    elif (move== 1):
+        textsurface = myfont.render("MOVE FORWARD         ", False, (255, 255, 255), (0,0,0) )
+    elif (move==-1):
+        textsurface = myfont.render("MOVE BACKWARD        ", False, (255, 255, 255), (0,0,0) )
+
+    fenetre.blit(textsurface,(0,30))
+    pygame.display.flip()
+
+
     # Wait next tick
     while( time() < t+i*tick_period ):    # tick => i
-        # pass
-        if ( tick%10 == 0 ):    #
-            for event in pygame.event.get():    #Attente des événements
-                # if event.type == QUIT:
-                #     continuer = 0
+        pass
+        #if ( tick%10 == 0 ):    #
 
-                if (event.type == KEYDOWN):
-                    if   (event.key == K_UP   ):
-                        move = min( move+1, 1)
-                        textsurface = myfont.render("UP      => MOVE : {}           ".format(move), False, (255, 0, 255), (0,100,0) )
-                        fenetre.blit(textsurface,(0,0))
-                        pygame.display.flip()
-                    elif (event.key == K_DOWN ):
-                        move = max( move-1, -1)
-                        textsurface = myfont.render("DOWN    => MOVE : {}           ".format(move), False, (255, 0, 255), (0,100,0) )
-                        fenetre.blit(textsurface,(0,0))
-                        pygame.display.flip()
-                    elif (event.key == K_LEFT ):
-                        if (offset > 460):
-                            offset -= 5
-                        textsurface = myfont.render("LEFT    => OFFSET : {}         ".format(offset-512), False, (255, 0, 255), (0,100,0) )
-                        fenetre.blit(textsurface,(0,0))
-                        pygame.display.flip()
-                    elif (event.key == K_RIGHT):
-                        if (offset < 564):
-                            offset += 5
-                        textsurface = myfont.render("RIGHT   => OFFSET : {}         ".format(offset-512), False, (255, 0, 255), (0,100,0) )
-                        fenetre.blit(textsurface,(0,0))
-                        pygame.display.flip()
 
 
         #sleep(sleep_time)   # utile si tick_period>0.001 ?
