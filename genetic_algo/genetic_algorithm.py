@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from math import *
 import sys
 import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
-from imageprocessing_functions.py import *
+from imageprocessing_functions import *
 
 
 ################################################################
@@ -36,9 +38,9 @@ def evaluate(snake, display_window, sensibility = (20,20,20), pixel_distance_to_
 	#return(int(score))
 	init_snake(id_bloque = 10, angle_bloque = 700, amplitude= snake[0], offset = snake[1])
 	a, b, target = getTargetLocation(display_window, sensibility, pixel_distance_to_go)
-	
+
 #FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
-	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
+	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])
 
 	getScore(target, a, b, display_window)
 
@@ -46,7 +48,7 @@ def evaluate(snake, display_window, sensibility = (20,20,20), pixel_distance_to_
 
 
 """
-Generate a random amplitude and offset that compose a snake 
+Generate a random amplitude and offset that compose a snake
 
 @returns amplitude, offset
 """
@@ -65,12 +67,12 @@ def generateFirstPopulation(sizePopulation):
 	while i < sizePopulation:
 		population.append(generateSnake())
 		i+=1
-	
+
 	return population
 
 """
 Test every Snake of the population to give them a score and sort
-the population by increasing order 
+the population by increasing order
 """
 
 def computePerfGeneration(population):
@@ -82,7 +84,7 @@ def computePerfGeneration(population):
 
 
 """
-Select the (int) "best_sample" snakes from the sorted population and some few lucky snakes randomly 
+Select the (int) "best_sample" snakes from the sorted population and some few lucky snakes randomly
 (lucky_few selected randomly)
 """
 def selectFromPopulation(populationSorted, best_sample, lucky_few):
@@ -92,19 +94,18 @@ def selectFromPopulation(populationSorted, best_sample, lucky_few):
 	for i in range(lucky_few):
 		nextGeneration.append(random.choice(populationSorted)[0])
 	random.shuffle(nextGeneration)
-	
+
 	return nextGeneration
 
 
 """
 Hybrids the two snake parents in order to create a child
 """
-
 def createChild(individual1, individual2):
 	"""
-	Possible solution : 
-		Amplitude = mean of their amplitude 
-		Offset = mean of their offset 
+	Possible solution :
+		Amplitude = mean of their amplitude
+		Offset = mean of their offset
 
 	Should we ponderate by their score ?
 	How to add some randomness ? => Ponderated randomly thanks to a gaussian ?
@@ -116,7 +117,7 @@ def createChild(individual1, individual2):
 	offset = pond_offset * individual1[1] + (1 - pond_offset) * individual2[1]
 
 	child = (int(amplitude), int(offset))
-	
+
 	return child
 
 
@@ -129,7 +130,7 @@ def createChildren(breeders, children_per_couple):
 	for i in range(int(len(breeders)/2)):
 		for j in range(children_per_couple):
 			nextPopulation.append(createChild(breeders[i], breeders[len(breeders) -1 -i]))
-	
+
 	return nextPopulation
 
 """
@@ -143,7 +144,7 @@ def mutateSnake(snake, modification_variance):
 	if (item_modified == 0):
 	 	return(int(mutation), snake[1])
 	return (snake[0], int(mutation))
-	
+
 """
 Randomly mutates the population given with a probability chance_of_mutation
 """
@@ -159,14 +160,14 @@ Check individual for unexpected values
 """
 
 def checkSnake(snake, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFSET = 312, MAX_OFFSET = 712):
-	amplitude, offset = snake 
-	if (amplitude < MIN_AMPLITUDE): 
+	amplitude, offset = snake
+	if (amplitude < MIN_AMPLITUDE):
 		amplitude = MIN_AMPLITUDE
-	elif (amplitude > MAX_AMPLITUDE): 
+	elif (amplitude > MAX_AMPLITUDE):
 		amplitude = MAX_AMPLITUDE
-	if (offset < MIN_OFFSET): 
+	if (offset < MIN_OFFSET):
 		offset = MIN_OFFSET
-	elif (offset > MAX_OFFSET): 
+	elif (offset > MAX_OFFSET):
 		offset = MAX_OFFSET
 
 	return(amplitude, offset)
@@ -184,7 +185,7 @@ def checkPopulation(population, MIN_AMPLITUDE = 0, MAX_AMPLITUDE = 500, MIN_OFFS
 Saves a generation in the file file_name
 """
 def saveGeneration(sorted_population, generation_index, file_name):
-	gen = "Generation_" + str(generation_index+1) + ".txt" 
+	gen = "Generation_" + str(generation_index+1) + ".txt"
 	file = open(file_name, "a+")
 	gen += '\n'
 	file.write(gen)
@@ -195,7 +196,7 @@ def saveGeneration(sorted_population, generation_index, file_name):
 
 def meanVarScore(populationWithScore, mean, var):
 	scores = [snake[1] for snake in populationWithScore]
-	
+
 	mean.append(np.mean(scores))
 	var.append(np.var(scores)/2)
 
@@ -206,7 +207,7 @@ def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, l
 	var = []
 
 	pop = generateFirstPopulation(populationSize)
-	
+
 	for generation in range(number_of_generations):
 		print("Generation no : " + str(generation+1))
 		perf = computePerfGeneration(pop)
@@ -225,7 +226,7 @@ def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, l
 ################################################################
 ##############################MAIN##############################
 ################################################################
-firstPopulationSize = 20; number_of_generations = 10; best_sample = 5; 
+firstPopulationSize = 20; number_of_generations = 10; best_sample = 5;
 lucky_few = 2; children_per_couple = 4;chance_of_mutation = 0.15;
 initImage()
 

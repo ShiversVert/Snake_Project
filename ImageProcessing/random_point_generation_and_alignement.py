@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import time
-import pygame 
+import pygame
 import pygame.camera
 import pygame.transform
 import numpy as np
@@ -28,9 +30,9 @@ def generate_random_polygon(surface, color, size = 40, max_sides = 15):
 	y = randint(0, surface.get_height())
 	vertices = []
 
-	for i in range(side_number):	
+	for i in range(side_number):
 		vertices.append(((x + randint(-size, size)), (y + randint(-size, size))) )
-	
+
 	pygame.draw.polygon(surface, color, vertices)
 	pygame.display.flip()
 	return(0)

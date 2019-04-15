@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pygame, time
 import pygame.camera
 import pygame.transform

@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import time
-import pygame 
+import pygame
 import pygame.camera
 import pygame.transform
 import numpy as np
@@ -34,7 +36,7 @@ def generate_random_polygon(surface, color, size=40, max_sides=15):
     pygame.draw.polygon(surface, color, vertices)
     pygame.display.flip()
     return (0)
-    
+
 ## Init
 white = (255,255,255)
 white_array = np.array([255,255,255])

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Ce programme permet de recuperer une image grace a la webcam.
 Recuperre ensuite les references de rouge et de vert dans le coins superieurs droits et gauche.
@@ -70,14 +72,14 @@ def getTargetLocation(display_window, sensibility, pixel_distance_to_go = 300, h
 	pos_red = mask_red.centroid()
 	pos_green = mask_green.centroid()
 	target_of_sight = True
-	
+
 	while(target_of_sight):
 		while (pos_red == (0,0)):
 			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
 			input()
 			mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
 			pos_red = mask_red.centroid()
-		
+
 		while (pos_green == (0,0)):
 			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
 			intput()
