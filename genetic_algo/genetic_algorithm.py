@@ -4,7 +4,7 @@ import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
-from "../ImageProcessing/imageprocessing_functions.py" import *
+from imageprocessing_functions.py import *
 
 
 ################################################################
