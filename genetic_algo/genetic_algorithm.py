@@ -4,7 +4,7 @@ import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
-from "../ImageProcessing/imageprocessing_functions.py" import *
+from imageprocessing_functions.py import *
 
 
 ################################################################
@@ -25,7 +25,6 @@ display_width = 1280; display_height = 720
 ############################FUNCTIONS############################
 #################################################################
 """
-#TODO
 take a snake (amplitude, offset), processes it and gives it's score
 
 The score function must also write the performance of the snake in a file
@@ -200,7 +199,7 @@ def meanVarScore(populationWithScore, mean, var):
 
 ## Main
 
-def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation):
+def genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation):
 	mean = []
 	var = []
 
@@ -224,10 +223,11 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 ################################################################
 ##############################MAIN##############################
 ################################################################
-
+firstPopulationSize = 20; number_of_generations = 10; best_sample = 5; 
+lucky_few = 2; children_per_couple = 4;chance_of_mutation = 0.15;
 initImage()
 
-mean, var = genetic_algorithm(100, 200, 100, 5, 10, 0.1)
+mean, var = genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation)
 
 fig = plt.figure(1)
 plt.errorbar(range(len(mean)), mean, var, ecolor = 'red')

@@ -80,7 +80,7 @@ pygame.display.set_caption('window')
 camlist = pygame.camera.list_cameras()
 # print(str(camlist));
 if camlist:
-    cam = pygame.camera.Camera(camlist[1], (1280, 720))
+    cam = pygame.camera.Camera(camlist[0], (1280, 720))
 else:
     cam = pygame.camera.Camera("/dev/video0", (640, 480))
 
