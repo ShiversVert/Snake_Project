@@ -1,5 +1,5 @@
 """
-Ce programme permet de recuperer une image grace a la webcam. 
+Ce programme permet de recuperer une image grace a la webcam.
 Recuperre ensuite les references de rouge et de vert dans le coins superieurs droits et gauche.
 Trouve les points correspondant au meme rouge et au meme vert.
 Determine la droite passant par ces points.
@@ -14,6 +14,7 @@ import numpy as np
 import pygame.surfarray
 import matplotlib.pyplot as plt
 from random import *
+from math import *
 
 DEBUG = True
 white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
@@ -104,16 +105,31 @@ def getScore(target, a, b, display_window, head_color = green):
 	pygame.display.flip()
 
 	mask_head = pygame.mask.from_threshold(display_window, head_color, sensibility)
-	#Get their center of mass
+	#Get the center of mass of the head
 	pos_head = mask_head.centroid()
+
+    #Coefficent of ponderation of the ellipsis
+    alpha = 1.5
 
 	if(pos_head == (0,0)):
 		return(sys.maxint) #If head is not detected
 	else
-	
-	#TODO Calculate the score in function of the (a,b) initial vector of the snake and the target location
+	   if(a == 0):
+           if(b<0):
+                theta = -(math.pi)/2
+           else
+                theta = math.pi/2
+        else
+            theta = atan(b/a) #Keep it in radian
+        #a and b are normalized for the calculus
+        a_norm = a/(np.sqrt(float (a**2 + b**2)))
+        b_norm = b/(np.sqrt(float (a**2 + b**2)))
 
-	
-	return(0)
+        distance_to_go = np.sqrt(float( (target[0]-a_norm)**2 + (target[1]-b_norm)**2) )
+        score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
+        #Check le - devant le x dans la deuxie partie
 
+        print("Valeur du score : ", score)
+        return(score)
 
+    return(sys.maxint) #Security return : does not consider this try
