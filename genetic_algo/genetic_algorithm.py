@@ -15,7 +15,7 @@ from move_function import *
 ################################################################
 
 DEBUG = True
-white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
+white = 0xffffff; red = 0xff5f5f; green = 0x42ecec; blue = 0x0000ff; black = 0x000000
 
 sensibility = (20, 20, 20)
 exit = False;get_color = False
@@ -39,10 +39,10 @@ def evaluate(snake, display_window, cam, display_width, display_height, sensibil
 	#return(int(score))
 	print("Evaluation de l'individu")
 	print(snake)
+
 	init_snake(id_bloque = 10, angle_bloque = 700, amplitude = snake[0], offset = snake[1])
 	a, b, target = getTargetLocation(display_window, sensibility, cam, display_width, display_height, pixel_distance_to_go)
 
-#FUNCTION TO MOVE THE SNAKE DURING t seconds with the parameters "snake" = "amplitude, offset" and always blocking the same motor in the same position
 	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
 
 	getScore(target, a, b, sensibility, display_window, cam, display_width, display_height)
@@ -227,6 +227,7 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	return mean,var
 
+def genetic_algorithm_from_generation()
 ################################################################
 ##############################MAIN##############################
 ################################################################

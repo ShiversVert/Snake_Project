@@ -19,7 +19,7 @@ from random import *
 from math import *
 
 DEBUG = True
-white = 0xffffff; red = 0xff5f5f; green = 0x4eb7a6; blue = 0x0000ff; black = 0x000000
+white = 0xffffff; red = 0xff5f5f; green = 0x42ecec; blue = 0x0000ff; black = 0x000000
 
 # Functions
 
