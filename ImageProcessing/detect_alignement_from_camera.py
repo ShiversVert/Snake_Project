@@ -151,7 +151,7 @@ while running:
 
 	#Draw ref
 	draw_linear(a_ref, b_ref, white, display_width, display_window)
-	draw_target(300, red_ref, green_ref, display_window, head_color=green, radius=10)
+	draw_target(850, red_ref, green_ref, display_window, head_color=green, radius=10)
 
 	t2 = time.time();
 	process_time.append(t2 - t1)

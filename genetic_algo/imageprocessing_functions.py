@@ -34,7 +34,8 @@ def draw_linear(a, b,color, display_width, display_window):
 
 def draw_target(target_coordinates, display_window, head_color=green, radius=10, color = blue, width = 1):
 	print(target_coordinates)
-	print(display_window)
+	print(display_window.get_width)
+	print(display_window.get_height)
 	pygame.draw.circle(display_window, color, target_coordinates, radius, width)
 	pygame.draw.circle(display_window, color, target_coordinates, radius+20, width)
 	pygame.draw.circle(display_window, color, target_coordinates, radius+40, width)
