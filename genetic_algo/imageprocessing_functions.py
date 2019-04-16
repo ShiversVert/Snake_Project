@@ -68,7 +68,7 @@ def initImage():
 def getTargetLocation(display_window, sensibility, cam,display_width, display_height, pixel_distance_to_go = 850, head_color=green, green = green, red = red):
 	#Get image and displays it
 	target_of_sight = True
-
+	
 	while(target_of_sight):
 		img = cam.get_image()
 		img = pygame.transform.scale(img, (display_width, display_height))
@@ -83,10 +83,10 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 		#Get their center of mass
 		pos_red = mask_red.centroid()
 		pos_green = mask_green.centroid()
-
+	
 		while (pos_red == (0,0)):
 			print("Impossible de detecter des pixels rouges\n Replacez le serpent et appuyez sur entrée")
-			raw_input()
+			raw_input()	
 			img = cam.get_image()
 			img = pygame.transform.scale(img, (display_width, display_height))
 			display_window.blit(img, (0, 0))
@@ -97,7 +97,7 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 
 		while (pos_green == (0,0)):
 			print("Impossible de detecter des pixels verts\n Replacez le serpent et appuyez sur entrée")
-			raw_input()
+			raw_input()	
 			img = cam.get_image()
 			img = pygame.transform.scale(img, (display_width, display_height))
 			display_window.blit(img, (0, 0))
@@ -111,7 +111,7 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 			a = pos_green[1] - pos_red[1]
 		else:
 			a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
-
+		
 		b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
 
 		if head_color == green :
@@ -133,11 +133,11 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 			target_of_sight = False
 
 		draw_linear(a, b, 0xffffff, display_width, display_window)
-		draw_target(target_coordinates)
-	return(pos_red[0]-pos_green[0], pos_red[1]-pos_green[1], target_coordinates)
+		draw_target(target_coordinates, display_window)
+	return(a, b, target_coordinates)
 
 def getScore(target, a, b,sensibility, display_window, cam,display_width, display_height, head_color = green):
-
+	
 	img = cam.get_image()
 	img = pygame.transform.scale(img, (display_width, display_height))
 	display_window.blit(img, (0, 0))
