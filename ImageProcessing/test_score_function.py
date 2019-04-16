@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Ce programme permet de recuperer une image grace a la webcam. 
+Ce programme permet de recuperer une image grace a la webcam.
 Recuperre ensuite les references de rouge et de vert dans le coins superieurs droits et gauche.
 Trouve les points correspondant au meme rouge et au meme vert.
 Determine la droite passant par ces points.
@@ -23,13 +23,16 @@ def getScore(target, a_ref, b_ref, x_head, y_head):
 	alpha = 1.5
 
 	if(pos_head == (0,0)):
-		return(maxint) #If head is not detected
+		return(sys.maxint) #If head is not detected
+
+	if((a == 0) and (b == 0)):
+		return(sys.maxint) #If head is on tail
 	else:
 		if(a == 0):
 			if(b<0):
-				theta = -(pi)/2
+				theta = -(math.pi)/2
 			else:
-				theta = pi/2
+				theta = math.pi/2
 		else:
 			theta = atan(b/a) #Keep it in radian
 
@@ -37,11 +40,20 @@ def getScore(target, a_ref, b_ref, x_head, y_head):
 		a_norm = a/(np.sqrt(float (a**2 + b**2)))
 		b_norm = b/(np.sqrt(float (a**2 + b**2)))
 
-		distance_to_go = 500
-		score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
-		#Check le - devant le x dans la deuxie partie
+		S = sin(theta)
+		C = cos(theta)
+		T0 = target[0]
+		T1 = target[1]
+		P0 = pos_head[0]
+		P1 = pos_head[1]
 
-		#print("Valeur du score : ", score)
+		score = np.sqrt(float( (T0*C-T1*S-P0*C+P1*S)**2 + alpha*((T0*S+T1*C-P0*S-P1*C)**2) ))
+
+        #distance_to_go = np.sqrt(float( (target[0]-pos_head[0])**2 + (target[1]-pos_head[1])**2) )
+        #score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
+        #Check le - devant le x dans la deuxie partie
+
+		print("Valeur du score : ", score)
 		return(score)
 
 	return(maxint)
