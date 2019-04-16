@@ -134,7 +134,7 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 
 		draw_linear(a, b, 0xffffff, display_width, display_window)
 		draw_target(target_coordinates, display_window)
-	return(a, b, target_coordinates)
+	return(vect_directeur[0], vect_directeur[1], target_coordinates)
 
 def getScore(target, a, b,sensibility, display_window, cam,display_width, display_height, head_color = green):
 	
