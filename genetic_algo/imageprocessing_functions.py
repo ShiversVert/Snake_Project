@@ -140,6 +140,10 @@ def getScore(target, a, b,sensibility, display_window, cam,display_width, displa
 	if(pos_head == (0,0)):
 		return(sys.maxint) #If head is not detected
 	else:
+
+		distance_to_target = sqrt((target[0]-pos_head[0])**2 + (target[1]-pos_head[1])**2)
+		return(distance_to_target)
+		"""
 		if(a == 0):
 			if(b<0):
 				theta = -(pi)/2
@@ -158,5 +162,5 @@ def getScore(target, a, b,sensibility, display_window, cam,display_width, displa
 
 		print("Valeur du score : ", score)
 		return(score)
-
+		"""
 	return(sys.maxint) #Security return : does not consider this try
