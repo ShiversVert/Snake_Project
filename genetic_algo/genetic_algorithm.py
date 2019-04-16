@@ -226,7 +226,8 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	return mean,var
 
-def genetic_algorithm_from_generation()
+def genetic_algorithm_from_generation():
+	return(0)
 ################################################################
 ##############################MAIN##############################
 ################################################################

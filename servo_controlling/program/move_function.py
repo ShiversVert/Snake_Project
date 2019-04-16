@@ -35,7 +35,7 @@ def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=
     sleep(t_init_sleep)
     for n in range(n_servo):
         dynamixel.set_reg_1b( ser, servo_id[n], reg_addr, reg_value, wait_response )
-        print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
+        #print('Reg @{} set successfully at {} !'.format(reg_addr, reg_value) )
         sleep(t_sleep)
 
 def multi_set_velocity(ser, servo_id, v, t_init_sleep=0.1, t_sleep=0.05):

@@ -32,6 +32,14 @@ def draw_linear(a, b,color, display_width, display_window):
 	pygame.draw.line(display_window, color, points[0], points[1])
 	pygame.display.flip()
 
+def draw_target(target_coordinates, display_window, head_color=green, radius=10, color = blue, width = 1):
+	print(target_coordinates)
+	print(display_window)
+	pygame.draw.circle(display_window, color, target_coordinates, radius, width)
+	pygame.draw.circle(display_window, color, target_coordinates, radius+20, width)
+	pygame.draw.circle(display_window, color, target_coordinates, radius+40, width)
+	pygame.display.flip()
+
 """
 Initiate image processing and return the display window
 """
@@ -102,6 +110,7 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 			a = pos_green[1] - pos_red[1]
 		else:
 			a = (pos_green[1] - pos_red[1]) / (pos_green[0] - pos_red[0])
+		
 		b = 0.5 * (pos_red[1] - a * pos_red[0] + pos_green[1] - a * pos_green[0])
 
 		if head_color == green :
@@ -121,6 +130,9 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 			raw_input()
 		else:
 			target_of_sight = False
+
+		draw_linear(a, b, 0xffffff, display_width, display_window)
+		draw_target(target_coordinates)
 	return(a, b, target_coordinates)
 
 def getScore(target, a, b,sensibility, display_window, cam,display_width, display_height, head_color = green):
@@ -138,12 +150,11 @@ def getScore(target, a, b,sensibility, display_window, cam,display_width, displa
 	alpha = 1.5
 
 	if(pos_head == (0,0)):
-		return(sys.maxint) #If head is not detected
-	else:
+		return(maxint) #If head is not detected
 
-		distance_to_target = sqrt((target[0]-pos_head[0])**2 + (target[1]-pos_head[1])**2)
-		return(distance_to_target)
-		"""
+	if((a == 0) and (b == 0)):
+		return(maxint) #If head is on tail
+	else:
 		if(a == 0):
 			if(b<0):
 				theta = -(pi)/2
@@ -156,11 +167,21 @@ def getScore(target, a, b,sensibility, display_window, cam,display_width, displa
 		a_norm = a/(np.sqrt(float (a**2 + b**2)))
 		b_norm = b/(np.sqrt(float (a**2 + b**2)))
 
-		distance_to_go = np.sqrt(float( (target[0]-a_norm)**2 + (target[1]-b_norm)**2) )
-		score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
-		#Check le - devant le x dans la deuxie partie
+		S = sin(theta)
+		C = cos(theta)
+		T0 = target[0]
+		T1 = target[1]
+		P0 = pos_head[0]
+		P1 = pos_head[1]
+		alpha = 10
 
-		print("Valeur du score : ", score)
+		score = np.sqrt(float( ((P0-T0)*C+(P1-T1)*S)**2 + alpha*((P0-T0)*S-(P1-T1)*C)**2))
+
+        #distance_to_go = np.sqrt(float( (target[0]-pos_head[0])**2 + (target[1]-pos_head[1])**2) )
+        #score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
+        #Check le - devant le x dans la deuxie partie
+
+		#print("Valeur du score : ", score)
 		return(score)
-		"""
-	return(sys.maxint) #Security return : does not consider this try
+
+	return(maxint)

@@ -20,19 +20,19 @@ def getScore(target, a_ref, b_ref, x_head, y_head):
 	pos_head = (x_head, y_head)
 
 	#Coefficent of ponderation of the ellipsis
-	alpha = 1.5
+	
 
 	if(pos_head == (0,0)):
-		return(sys.maxint) #If head is not detected
+		return(maxint) #If head is not detected
 
 	if((a == 0) and (b == 0)):
-		return(sys.maxint) #If head is on tail
+		return(maxint) #If head is on tail
 	else:
 		if(a == 0):
 			if(b<0):
-				theta = -(math.pi)/2
+				theta = -(pi)/2
 			else:
-				theta = math.pi/2
+				theta = pi/2
 		else:
 			theta = atan(b/a) #Keep it in radian
 
@@ -46,14 +46,15 @@ def getScore(target, a_ref, b_ref, x_head, y_head):
 		T1 = target[1]
 		P0 = pos_head[0]
 		P1 = pos_head[1]
+		alpha = 10
 
-		score = np.sqrt(float( (T0*C-T1*S-P0*C+P1*S)**2 + alpha*((T0*S+T1*C-P0*S-P1*C)**2) ))
+		score = np.sqrt(float( ((P0-T0)*C+(P1-T1)*S)**2 + alpha*((P0-T0)*S-(P1-T1)*C)**2))
 
         #distance_to_go = np.sqrt(float( (target[0]-pos_head[0])**2 + (target[1]-pos_head[1])**2) )
         #score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
         #Check le - devant le x dans la deuxie partie
 
-		print("Valeur du score : ", score)
+		#print("Valeur du score : ", score)
 		return(score)
 
 	return(maxint)
@@ -64,8 +65,8 @@ sensibility = (20, 20, 20)
 exit = False;get_color = False
 display_width = 1000; display_height = 1000
 
-a = display_width/display_height; b = 0;
-target_pos = (display_width/2, display_height/2)
+a = 1; b = 1;
+target_pos = (500,500)
 score = np.zeros((display_width, display_height))
 
 x = np.linspace(0, display_width-1, display_width)
@@ -78,7 +79,9 @@ for i in range(display_width):
 print("calcul ok")
 fig = plt.figure()
 ax = plt.axes(projection='3d')
-ax.plot_wireframe(X, Y, score)
+#ax.contour3D(X, Y, score, 50, cmap='binary')
+#ax.plot_wireframe(X, Y, score, color='black')
+ax.plot_surface(X, Y, score, rstride=25, cstride=25,cmap='viridis',edgecolor='none')
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_zlabel('Score');
