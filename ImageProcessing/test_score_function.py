@@ -37,7 +37,7 @@ def getScore(target, a_ref, b_ref, x_head, y_head):
 		a_norm = a/(np.sqrt(float (a**2 + b**2)))
 		b_norm = b/(np.sqrt(float (a**2 + b**2)))
 
-		distance_to_go = np.sqrt(float( (target[0]-a_norm)**2 + (target[1]-b_norm)**2) )
+		distance_to_go = 500
 		score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
 		#Check le - devant le x dans la deuxie partie
 

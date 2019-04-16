@@ -51,7 +51,7 @@ def evaluate(snake, display_window, cam, display_width, display_height, sensibil
 
 
 """
-Generate a random amplitude and offset that compose a snake 
+Generate a random amplitude and offset that compose a snake
 
 @returns amplitude, offset
 """
@@ -70,12 +70,12 @@ def generateFirstPopulation(sizePopulation):
 	while i < sizePopulation:
 		population.append(generateSnake())
 		i+=1
-	
+
 	return population
 
 """
 Test every Snake of the population to give them a score and sort
-the population by increasing order 
+the population by increasing order
 """
 
 def computePerfGeneration(population, display_window, cam, display_width, display_height):
@@ -87,7 +87,7 @@ def computePerfGeneration(population, display_window, cam, display_width, displa
 
 
 """
-Select the (int) "best_sample" snakes from the sorted population and some few lucky snakes randomly 
+Select the (int) "best_sample" snakes from the sorted population and some few lucky snakes randomly
 (lucky_few selected randomly)
 """
 def selectFromPopulation(populationSorted, best_sample, lucky_few):
@@ -104,12 +104,11 @@ def selectFromPopulation(populationSorted, best_sample, lucky_few):
 """
 Hybrids the two snake parents in order to create a child
 """
-
 def createChild(individual1, individual2):
 	"""
-	Possible solution : 
-		Amplitude = mean of their amplitude 
-		Offset = mean of their offset 
+	Possible solution :
+		Amplitude = mean of their amplitude
+		Offset = mean of their offset
 
 	Should we ponderate by their score ?
 	How to add some randomness ? => Ponderated randomly thanks to a gaussian ?
@@ -121,7 +120,7 @@ def createChild(individual1, individual2):
 	offset = pond_offset * individual1[1] + (1 - pond_offset) * individual2[1]
 
 	child = (int(amplitude), int(offset))
-	
+
 	return child
 
 
@@ -134,7 +133,7 @@ def createChildren(breeders, children_per_couple):
 	for i in range(int(len(breeders)/2)):
 		for j in range(children_per_couple):
 			nextPopulation.append(createChild(breeders[i], breeders[len(breeders) -1 -i]))
-	
+
 	return nextPopulation
 
 """
@@ -148,7 +147,7 @@ def mutateSnake(snake, modification_variance):
 	if (item_modified == 0):
 	 	return(int(mutation), snake[1])
 	return (snake[0], int(mutation))
-	
+
 """
 Randomly mutates the population given with a probability chance_of_mutation
 """
@@ -167,11 +166,11 @@ def checkSnake(snake, MIN_AMPLITUDE = 200, MAX_AMPLITUDE = 500, MIN_OFFSET = 460
 	amplitude, offset = snake 
 	if (amplitude < MIN_AMPLITUDE): 
 		amplitude = MIN_AMPLITUDE
-	elif (amplitude > MAX_AMPLITUDE): 
+	elif (amplitude > MAX_AMPLITUDE):
 		amplitude = MAX_AMPLITUDE
-	if (offset < MIN_OFFSET): 
+	if (offset < MIN_OFFSET):
 		offset = MIN_OFFSET
-	elif (offset > MAX_OFFSET): 
+	elif (offset > MAX_OFFSET):
 		offset = MAX_OFFSET
 
 	return(amplitude, offset)
@@ -189,7 +188,7 @@ def checkPopulation(population, MIN_AMPLITUDE = 200, MAX_AMPLITUDE = 500, MIN_OF
 Saves a generation in the file file_name
 """
 def saveGeneration(sorted_population, generation_index, file_name):
-	gen = "Generation_" + str(generation_index+1) + ".txt" 
+	gen = "Generation_" + str(generation_index+1) + ".txt"
 	file = open(file_name, "a+")
 	gen += '\n'
 	file.write(gen)
@@ -200,7 +199,7 @@ def saveGeneration(sorted_population, generation_index, file_name):
 
 def meanVarScore(populationWithScore, mean, var):
 	scores = [snake[1] for snake in populationWithScore]
-	
+
 	mean.append(np.mean(scores))
 	var.append(np.var(scores)/2)
 
@@ -211,7 +210,7 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 	var = []
 
 	pop = generateFirstPopulation(populationSize)
-	
+
 	for generation in range(number_of_generations):
 		print("Generation no : " + str(generation+1))
 		perf = computePerfGeneration(pop, display_window, cam, display_width, display_height)
@@ -231,7 +230,7 @@ def genetic_algorithm_from_generation()
 ################################################################
 ##############################MAIN##############################
 ################################################################
-firstPopulationSize = 20; number_of_generations = 10; best_sample = 5; 
+firstPopulationSize = 20; number_of_generations = 10; best_sample = 5;
 lucky_few = 2; children_per_couple = 4;chance_of_mutation = 0.15;
 display_window, display_width, display_height, cam = initImage()
 

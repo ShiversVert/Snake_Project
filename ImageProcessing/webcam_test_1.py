@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pygame
 import pygame.camera
 
@@ -12,7 +14,7 @@ display_height = 480
 black = (0,0,0)
 white = (255,255,255)
 
-## Recuperation de l'image 
+## Recuperation de l'image
 
 camlist = pygame.camera.list_cameras()
 if camlist:
@@ -44,5 +46,3 @@ while not crashed:
 
 pygame.quit()
 quit()
-
-

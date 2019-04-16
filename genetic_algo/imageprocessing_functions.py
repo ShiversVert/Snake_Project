@@ -85,7 +85,7 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 
 			mask_red = pygame.mask.from_threshold(display_window, red, sensibility)
 			pos_red = mask_red.centroid()
-		
+
 		while (pos_green == (0,0)):
 			print("Impossible de detecter des pixels verts\n Replacez le serpent et appuyez sur entrée")
 			raw_input()	

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Ce programme permet de recuperer une image grace a la webcam. 
+Ce programme permet de recuperer une image grace a la webcam.
 Recuperre ensuite les references de rouge et de vert dans le coins superieurs droits et gauche.
 Trouve les points correspondant au meme rouge et au meme vert.
 Determine la droite passant par ces points.
@@ -47,7 +47,7 @@ def draw_target(distance_to_go, red_pos, green_pos, display_window, head_color=g
 	print(vect_directeur)
 
 	norm = np.sqrt(float(vect_directeur[0]*vect_directeur[0] + vect_directeur[1] * vect_directeur[1]))
-	
+
 	center = vect_directeur/ norm * distance_to_go + green_pos
 	center = center.astype(int)
 
@@ -76,7 +76,7 @@ pygame.display.set_caption('window')
 
 ## Code
 
-## Recuperation de l'image 
+## Recuperation de l'image
 
 
 camlist = pygame.camera.list_cameras()
@@ -144,13 +144,13 @@ while running:
 		draw_linear(a, b,black, display_width, display_window)
 
 	#Draw the reference ine in white
-	if set_ref == True : 
+	if set_ref == True :
 		a_ref, b_ref = a , b
 		green_ref, red_ref = pos_green, pos_red
 		set_ref = False
 
 	#Draw ref
-	draw_linear(a_ref, b_ref, white, display_width, display_window)	
+	draw_linear(a_ref, b_ref, white, display_width, display_window)
 	draw_target(300, red_ref, green_ref, display_window, head_color=green, radius=10)
 
 	t2 = time.time();
@@ -178,7 +178,7 @@ while (display_time_hist != 'Y' and display_time_hist != 'N'):
 	display_time_hist = readchar.readchar()
 	print(display_time_hist)
 if display_time_hist == 'Y':
-	fig = plt.figure() 
+	fig = plt.figure()
 	plt.hist(process_time,20)
 	plt.hist(acquisition_time,20)
 	plt.show()
