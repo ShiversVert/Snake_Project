@@ -33,7 +33,7 @@ take a snake (amplitude, offset), processes it and gives it's score
 The score function must also write the performance of the snake in a file
 """
 
-def evaluate(snake, display_window, cam, display_width, display_height, sensibility = (20,20,20), pixel_distance_to_go = 300):
+def evaluate(snake, display_window, cam, display_width, display_height, sensibility = (20,20,20), pixel_distance_to_go = 637):
 
 	#score = sqrt(pow(snake[0]-300,2)) + sqrt(pow(snake[1] - 512, 2))
 	#return(int(score))
@@ -45,9 +45,9 @@ def evaluate(snake, display_window, cam, display_width, display_height, sensibil
 
 	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
 
-	getScore(target, a, b, sensibility, display_window, cam, display_width, display_height)
+	score = getScore(target, a, b, sensibility, display_window, cam, display_width, display_height)
 
-	return(0)
+	return(score)
 
 
 """
@@ -80,9 +80,11 @@ the population by increasing order
 
 def computePerfGeneration(population, display_window, cam, display_width, display_height):
 	populationPerf = {}
+	compteur = 0;
 	for snake in population:
 		populationPerf[snake] = evaluate(snake, display_window, cam, display_width, display_height)
-
+		compteur += 1;
+		print('Individu :', compteur)
 	return sorted(populationPerf.items(), key = operator.itemgetter(1))
 
 

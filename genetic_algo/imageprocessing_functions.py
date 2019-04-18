@@ -33,12 +33,7 @@ def draw_linear(a, b,color, display_width, display_window):
 	pygame.display.flip()
 
 def draw_target(target_coordinates, display_window, head_color=green, radius=10, color = blue, width = 1):
-	print(target_coordinates)
-	print(display_window.get_width)
-	print(display_window.get_height)
-	pygame.draw.circle(display_window, color, target_coordinates, radius, width)
-	pygame.draw.circle(display_window, color, target_coordinates, radius+20, width)
-	pygame.draw.circle(display_window, color, target_coordinates, radius+40, width)
+	pygame.draw.circle(display_window, color, target_coordinates, radius)
 	pygame.display.flip()
 
 """
@@ -136,8 +131,8 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 		draw_target(target_coordinates, display_window)
 	return(vect_directeur[0], vect_directeur[1], target_coordinates)
 
-def getScore(target, a, b,sensibility, display_window, cam,display_width, display_height, head_color = green):
-	
+def getScore(target, a, b, sensibility, display_window, cam,display_width, display_height, head_color = green):
+
 	img = cam.get_image()
 	img = pygame.transform.scale(img, (display_width, display_height))
 	display_window.blit(img, (0, 0))
@@ -151,10 +146,10 @@ def getScore(target, a, b,sensibility, display_window, cam,display_width, displa
 	alpha = 1.5
 
 	if(pos_head == (0,0)):
-		return(maxint) #If head is not detected
+		return(sys.maxint) #If head is not detected
 
 	if((a == 0) and (b == 0)):
-		return(maxint) #If head is on tail
+		return(sys.maxint) #If head is on tail
 	else:
 		if(a == 0):
 			if(b<0):
@@ -182,7 +177,7 @@ def getScore(target, a, b,sensibility, display_window, cam,display_width, displa
         #score = np.sqrt(float( (pos_head[0]*cos(theta) + pos_head[1]*sin(theta) - distance_to_go)**2 + alpha*(-pos_head[0]*sin(theta) + pos_head[1]*cos(theta)**2) ))
         #Check le - devant le x dans la deuxie partie
 
-		#print("Valeur du score : ", score)
+		print("Valeur du score : ", score)
 		return(score)
 
-	return(maxint)
+	return(sys.maxint)
