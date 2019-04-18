@@ -238,6 +238,8 @@ def genetic_algorithm_from_generation(save, populationSize, number_of_generation
 	print("Generation from "+save+" loaded to this world")
 	text_file.close()
 	pop = np.array(lines).reshape(3,len(lines)/3)[:,0:2].tolist()
+	for k in range(len(pop)) :
+	    pop[k] = (int(pop[k][0]),int(pop[k][1]))
 
 	for generation in range(number_of_generations):
 		print("Generation no : " + str(generation+1))
