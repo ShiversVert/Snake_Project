@@ -189,11 +189,9 @@ def checkPopulation(population, MIN_AMPLITUDE = 200, MAX_AMPLITUDE = 500, MIN_OF
 """
 Saves a generation in the file file_name
 """
-def saveGeneration(sorted_population, generation_index, file_name):
+def saveGeneration(sorted_population, generation_index):
 	gen = "Generation_" + str(generation_index+1) + ".txt"
-	file = open(file_name, "a+")
-	gen += '\n'
-	file.write(gen)
+	file = open(gen, "a+")
 	for i in range(len(sorted_population)):
 		snake = str(sorted_population[i][0][0]) + ';' + str(sorted_population[i][0][1]) + ';' + str(sorted_population[i][1]) + '\n'
 		file.write(snake)
@@ -215,9 +213,10 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	for generation in range(number_of_generations):
 		print("Generation no : " + str(generation+1))
+
 		perf = computePerfGeneration(pop, display_window, cam, display_width, display_height)
-		#print(perf)
-		saveGeneration(perf, generation, "test1.csv")
+		
+		saveGeneration(perf, generation)
 		meanVarScore(perf, mean, var)#Saving mean and var
 
 		sample = selectFromPopulation(perf, best_sample, lucky_few)
