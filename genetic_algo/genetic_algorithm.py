@@ -6,6 +6,7 @@ import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
+import re
 from imageprocessing_functions import *
 from move_function import *
 
@@ -43,7 +44,7 @@ def evaluate(snake, display_window, cam, display_width, display_height, sensibil
 	init_snake(id_bloque = 10, angle_bloque = 700, amplitude = snake[0], offset = snake[1])
 	a, b, target = getTargetLocation(display_window, sensibility, cam, display_width, display_height, pixel_distance_to_go)
 
-	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])	
+	move_snake(id_bloque = 10, amplitude = snake[0], offset  = snake[1])
 
 	score = getScore(target, a, b, sensibility, display_window, cam, display_width, display_height)
 
@@ -99,7 +100,7 @@ def selectFromPopulation(populationSorted, best_sample, lucky_few):
 	for i in range(lucky_few):
 		nextGeneration.append(choice(populationSorted)[0])
 	shuffle(nextGeneration)
-	
+
 	return nextGeneration
 
 
@@ -165,8 +166,8 @@ Check individual for unexpected values
 """
 
 def checkSnake(snake, MIN_AMPLITUDE = 200, MAX_AMPLITUDE = 500, MIN_OFFSET = 460, MAX_OFFSET = 564):
-	amplitude, offset = snake 
-	if (amplitude < MIN_AMPLITUDE): 
+	amplitude, offset = snake
+	if (amplitude < MIN_AMPLITUDE):
 		amplitude = MIN_AMPLITUDE
 	elif (amplitude > MAX_AMPLITUDE):
 		amplitude = MAX_AMPLITUDE
@@ -215,7 +216,7 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 		print("Generation no : " + str(generation+1))
 
 		perf = computePerfGeneration(pop, display_window, cam, display_width, display_height)
-		
+
 		saveGeneration(perf, generation)
 		meanVarScore(perf, mean, var)#Saving mean and var
 
@@ -227,8 +228,34 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	return mean,var
 
-def genetic_algorithm_from_generation():
-	return(0)
+def genetic_algorithm_from_generation(save, populationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window, cam, display_width, display_height):
+	mean = []
+	var = []
+	text_file = open(save, "r")
+	lines = text_file.read()
+	lines = re.sub(r"\s+$", "", lines)
+	lines = re.split('[; \n]',lines)
+	print("Generation from "+save+" loaded to this world")
+	text_file.close()
+	pop = np.array(lines).reshape(3,len(lines)/3)[:,0:2].tolist()
+	for k in range(len(pop)) :
+	    pop[k] = (int(pop[k][0]),int(pop[k][1]))
+
+	for generation in range(number_of_generations):
+		print("Generation no : " + str(generation+1))
+
+		perf = computePerfGeneration(pop, display_window, cam, display_width, display_height)
+
+		saveGeneration(perf, generation)
+		meanVarScore(perf, mean, var)#Saving mean and var
+
+		sample = selectFromPopulation(perf, best_sample, lucky_few)
+
+		pop = createChildren(sample, children_per_couple)
+		pop = mutatePopulation(pop, chance_of_mutation)
+		pop = checkPopulation(pop)
+
+	return mean,var
 ################################################################
 ##############################MAIN##############################
 ################################################################

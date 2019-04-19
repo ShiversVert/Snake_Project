@@ -24,10 +24,11 @@ speed(0)
 delay(0)
 
 # config snake
-n_period  = 1.3
-n_servo   = 9
+n_period  = 1
+n_servo   = 12
 mvt_speed = 0.05    ## C'EST LA RESOLUTION EN FAIT ?????
 amplitude = 400
+turnOffset = 50
 
 # config draw
 len_servo = 200 *(float(n_period)/n_servo)
@@ -36,9 +37,9 @@ len_servo = 200 *(float(n_period)/n_servo)
 for i in range(200):
 
     # create angle goal vector
-    l_angle = [amplitude * float(n_period)/n_servo * cos( 2*pi*(id_servo*n_period)/float(n_servo) + i*mvt_speed )     for id_servo in range(n_servo)]
+    l_angle = [turnOffset+amplitude * float(n_period)/n_servo * cos( 2*pi*(id_servo*n_period)/float(n_servo) + i*mvt_speed )     for id_servo in range(n_servo)]
     #          |             amplitude               |
-    print l_angle
+    # print l_angle
     ############ find start_angle #############
     penup()
 
