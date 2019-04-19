@@ -127,7 +127,7 @@ def getTargetLocation(display_window, sensibility, cam,display_width, display_he
 		else:
 			target_of_sight = False
 
-		draw_linear(a, b, 0xffffff, display_width, display_window)
+		#draw_linear(a, b, 0xffffff, display_width, display_window)
 		draw_target(target_coordinates, display_window)
 	return(vect_directeur[0], vect_directeur[1], target_coordinates)
 
