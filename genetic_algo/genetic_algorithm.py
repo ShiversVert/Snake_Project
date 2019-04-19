@@ -228,20 +228,44 @@ def genetic_algorithm(populationSize, number_of_generations, best_sample, lucky_
 
 	return mean,var
 
-def genetic_algorithm_from_generation(save, populationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window, cam, display_width, display_height):
-	mean = []
-	var = []
+"""
+Load the generation from the file "save" ad continue the genetic processing from there
+"""
+def genetic_algorithm_from_generation(save, loaded_gen_index, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window, cam, display_width, display_height):
+	mean = []; var = []
+
+	#Loading generation nb loaded_gen_index from file save
 	text_file = open(save, "r")
 	lines = text_file.read()
 	lines = re.sub(r"\s+$", "", lines)
 	lines = re.split('[; \n]',lines)
 	print("Generation from "+save+" loaded to this world")
 	text_file.close()
-	pop = np.array(lines).reshape(3,len(lines)/3)[:,0:2].tolist()
-	for k in range(len(pop)) :
-	    pop[k] = (int(pop[k][0]),int(pop[k][1]))
+	loaded_perf = np.array(lines).reshape(len(lines)/3, 3).tolist()
+	perf = np.zeros((len(lines)/3, 2)).tolist()
 
-	for generation in range(number_of_generations):
+	for i in range(len(lines)/3):
+		perf[i][0] = int(loaded_perf[i][0]), int(loaded_perf[i][1])
+		perf[i][1] = int(float(loaded_perf[i][2]))
+
+	print(perf)
+	print("Generation", loaded_gen_index, "loaded successfully")
+
+	#meanVarScore(perf, mean, var)#Saving mean and var
+
+	#Generate generation of index loaded_gen_index + 1 
+	sample = selectFromPopulation(perf, best_sample, lucky_few)
+
+	pop = createChildren(sample, children_per_couple)
+	pop = mutatePopulation(pop, chance_of_mutation)
+	pop = checkPopulation(pop)
+
+	print("Generation", loaded_gen_index+1, "hybridised successfully")
+	print(pop)
+	print('\n')
+	#COntinue genetic algorithm process	    
+
+	for generation in range(loaded_gen_index+1, number_of_generations):
 		print("Generation no : " + str(generation+1))
 
 		perf = computePerfGeneration(pop, display_window, cam, display_width, display_height)
@@ -256,6 +280,7 @@ def genetic_algorithm_from_generation(save, populationSize, number_of_generation
 		pop = checkPopulation(pop)
 
 	return mean,var
+
 ################################################################
 ##############################MAIN##############################
 ################################################################
@@ -263,7 +288,9 @@ firstPopulationSize = 20; number_of_generations = 20; best_sample = 6;
 lucky_few = 1; children_per_couple = 5;chance_of_mutation = 0.15;
 display_window, display_width, display_height, cam = initImage()
 
-mean, var = genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window,cam, display_width, display_height)
+#mean, var = genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window,cam, display_width, display_height)
+
+mean, var = genetic_algorithm_from_generation("Generation_6.txt", 6, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window, cam, display_width, display_height)
 
 fig = plt.figure(1)
 plt.errorbar(range(len(mean)), mean, var, ecolor = 'red')
