@@ -56,7 +56,7 @@ Generate a random amplitude and offset that compose a snake
 @returns amplitude, offset
 """
 def generateSnake():
-	amplitude = randint(200,500)
+	amplitude = randint(200,350)
 	offset = randint(460,564)
 
 	return(amplitude, offset)
@@ -153,7 +153,7 @@ def mutateSnake(snake, modification_variance):
 """
 Randomly mutates the population given with a probability chance_of_mutation
 """
-def mutatePopulation(population, chance_of_mutation, modification_variance = [10,	5]):
+def mutatePopulation(population, chance_of_mutation, modification_variance = [5,	5]):
 	for i in range(len(population)):
 		if random() < chance_of_mutation:
 			population[i] = mutateSnake(population[i], modification_variance)
@@ -232,8 +232,8 @@ def genetic_algorithm_from_generation():
 ################################################################
 ##############################MAIN##############################
 ################################################################
-firstPopulationSize = 20; number_of_generations = 10; best_sample = 5;
-lucky_few = 2; children_per_couple = 4;chance_of_mutation = 0.15;
+firstPopulationSize = 20; number_of_generations = 20; best_sample = 6;
+lucky_few = 1; children_per_couple = 5;chance_of_mutation = 0.15;
 display_window, display_width, display_height, cam = initImage()
 
 mean, var = genetic_algorithm(firstPopulationSize, number_of_generations, best_sample, lucky_few, children_per_couple, chance_of_mutation, display_window,cam, display_width, display_height)
