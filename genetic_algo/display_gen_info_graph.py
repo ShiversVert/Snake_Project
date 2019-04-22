@@ -46,7 +46,7 @@ def load_all_gen(name, nb_of_gen, extension ='.txt'):
 	return generations
 
 def display_all(generations, nb_of_gen):
-	mean =  []; var = []
+	mean =  []; var = [] #TODO
 	for i in range(nb_of_gen):
 		current_gen = generations[i]
 		print(current_gen)
@@ -62,6 +62,8 @@ def display_all(generations, nb_of_gen):
 		plt.plot(amplitude, score, 'x')
 		
 	plt.show()
+
+
 #######################################################
 #######################MAIN############################
 #######################################################
