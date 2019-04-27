@@ -20,9 +20,18 @@ ANGLE_MAX = 120
 
 def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=0.05):
     """
+    Set status_return mode of the servos.
+
+    :param ser: The ``serial`` port to use.
+    :param servo_id: the list of servo IDs.
+    :param reg_value: value to write in STATUS_RETURN_LEVEL register (cf registers.py).
+    :param t_init_sleep: pause time before start change reg values.
+    :param t_sleep: pause time between settings in each servo.
+
     If status_return disable => return nothing when new set
     If status_return enable  => return status packet when new set
     """
+
     n_servo  = len(servo_id)
     reg_addr = registers.STATUS_RETURN_LEVEL
     if   (reg_value == registers.STATUS_RETURN.RETURN_FOR_ALL_PACKETS):
@@ -40,9 +49,14 @@ def multi_set_status_return(ser, servo_id, reg_value, t_init_sleep=0.1, t_sleep=
 
 def multi_set_velocity(ser, servo_id, v, t_init_sleep=0.1, t_sleep=0.05):
     """
-    need status return enable
+    Set velocity of the servos. Need status return enable
 
-    v can be a value or a list
+    :param ser: The ``serial`` port to use.
+    :param servo_id: the list of servo IDs.
+    :param v: value of velocity to set.
+              v can be a value or a list.
+    :param t_init_sleep: pause time before start change reg values.
+    :param t_sleep: pause time between settings in each servo.
     """
     n_servo = len(servo_id)
 
@@ -69,10 +83,23 @@ def init_snake(serial_port   = '/dev/ttyUSB0',
                angle_bloque  = 512,
 
                amplitude     = 300,
-               offset    = 0,
+               offset        = 512,
 
                t_final_sleep = 2,
                t_sleep       = 0.05):
+    """
+    Initialize snake position for individual testing
+
+    :param serial_port: The ``serial`` object to use.
+    :param servo_id: the list of servo IDs.
+    :param n_period: number of "period" in the snake mouvement shape.
+    :param id_bloque: servo id of the servo which simulate a breakage.
+    :param angle_bloque: angle of the servo which simulate a breakage.
+    :param amplitude: amplitude of snake mouvement shape.
+    :param offset: curvature of snake mouvement shape.
+    :param t_final_sleep: pause time after the end of the init.
+    :param t_sleep: pause time between settings in each servo.
+    """
 
     ser = dynamixel.get_serial_for_url(serial_port)
 
@@ -127,9 +154,22 @@ def move_snake(serial_port = '/dev/ttyUSB0',
                resolution  = 300,
                n_period    = 1,
                id_bloque   = 0,   # pas de servo bloqué par défaut
-
                amplitude   = 300,
-               offset  = 0):
+               offset      = 512):
+    """
+    Do the snake mouvement for individual testing
+
+    :param serial_port: The ``serial`` object to use.
+    :param servo_id: the list of servo IDs.
+    :param tick_period: period of the mouvement management loop.
+    :param nb_tick: number of iteration of the mouvement management loop.
+    :param resolution: resolution for snake mouvement sampling.
+        If resolution increase, mouvement speed decrease.
+    :param n_period: number of "period" in the snake mouvement shape.
+    :param id_bloque: servo id of the servo which simulate a breakage.
+    :param amplitude: amplitude of snake mouvement shape.
+    :param offset: curvature of snake mouvement shape.
+    """
 
     ser = dynamixel.get_serial_for_url(serial_port)
 

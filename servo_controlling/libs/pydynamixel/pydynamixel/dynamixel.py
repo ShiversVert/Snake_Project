@@ -531,7 +531,7 @@ def get_position(ser, servo_id, verbose = VERBOSE, num_error_attempts = NUM_ERRO
 
 def set_position(ser, servo_id, position, verbose = VERBOSE, num_error_attempts = NUM_ERROR_ATTEMPTS):
     """
-    Set the taget position of a servo (the servo will not move until an action packet is sent).
+    Set the taget position of a servo.
 
     :param ser: The ``serial`` object to use.
     :param servo_id: The id of the servo.
@@ -547,7 +547,7 @@ def set_position(ser, servo_id, position, verbose = VERBOSE, num_error_attempts 
 
 def set_position_no_response(ser, servo_id, position, verbose = VERBOSE, num_error_attempts = NUM_ERROR_ATTEMPTS):
     """
-    Set the taget position of a servo (the servo will not move until an action packet is sent).
+    Set the taget position of a servo with in "no wait response" mode.
 
     :param ser: The ``serial`` object to use.
     :param servo_id: The id of the servo.
@@ -555,7 +555,6 @@ def set_position_no_response(ser, servo_id, position, verbose = VERBOSE, num_err
     :param verbose: If True, status information will be printed. (Default: ``VERBOSE``).
     :param attempts: The number of attempts to make to send the packet when an error is encountered. (Default: ``NUM_ERROR_ATTEMPTS``.)
 
-    :raises: An ``Exception`` if no packet is successfully read after ``attempts`` attempts.
     """
 
     packet = packets.get_write_position_packet(servo_id, position)

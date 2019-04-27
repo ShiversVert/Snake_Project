@@ -69,25 +69,6 @@ for i in range(200):
 
     sleep(0.1)
 
-    """ NOTE 2 solution :
-
-        1) tout les temps T:    ici dépend princ. de sleep(x)
-            set goal pos de chaque servo (avec formule l_angle)
-            send_action (à vitesse max ou opti pour non de vibration)
-
-            => problème vibration ! MAIS si T très petit, peut etre que ça passe
-
-
-        2) tout les temps T:
-            get pos
-            calculer next_wanted_pos (avec formule l_angle)
-            => set velocity ( v = angle_à_parcourir/T)  SERVO_SPEED
-
-            => if (pos < next_wanted_pos) set goal_pos to MAX_ANGLE
-               else   set goal_pos to MIN_ANGLE
-
-    """
-
 
 print("OK")
 

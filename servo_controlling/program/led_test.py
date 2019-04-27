@@ -1,6 +1,5 @@
 """
-The following code can be used to turn on the LED on a connected servo
-(on a POSIX-compliant platform.)
+Test d'allumage/extinction de la LED d'un servomoteur
 """
 
 from pydynamixel import dynamixel, registers
@@ -11,7 +10,7 @@ serial_port = '/dev/ttyUSB0'
 # You'll need to change this to the ID of your servo
 servo_id = 3
 
-# Turn the LED on
+# Turn the LED on or off (choose by commmenting)
 led_value = registers.LED_STATE.ON
 #led_value = registers.LED_STATE.OFF
 
