@@ -145,7 +145,12 @@ multi_set_velocity(ser,servo_id, 400)
 # disable write response for read instructions
 multi_set_status_return(ser, servo_id, registers.STATUS_RETURN.RETURN_ONLY_FOR_READ)
 
-
+# TEST BLOCAGE
+servo_bloque = 3
+angle_bloque = 300
+sleep(0.5)
+dynamixel.set_position_no_response( ser, servo_bloque , angle_bloque )
+sleep(0.5)
 
 t = time()
 tick = 0
@@ -155,8 +160,8 @@ for i in range(1,nb_tick):
     for n in range(n_servo):
 
         # TEST BLOCAGE
-        # if ( servo_id[n] == 10):
-        #     continue
+        if ( servo_id[n] == servo_bloque):
+            continue
 
         # dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
         dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
