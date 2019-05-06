@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-Programme démonstrateur permmettant de déplacer le robot serpent (avancer,
-reculer et tourner).
-Controle interactif par les flèches directionnelles du clavier.
+Program pour afficher la répartition du temps d'execution d'une itération de la
+boucle gérant le mouvement de serpent.
 """
 
 from time        import time, sleep
 from math        import cos, sin, pi, atan
 from pydynamixel import dynamixel, chain, registers
+
+import matplotlib.pyplot as plt
 
 import pygame
 from pygame.locals import *
@@ -145,30 +146,37 @@ multi_set_velocity(ser,servo_id, 400)
 # disable write response for read instructions
 multi_set_status_return(ser, servo_id, registers.STATUS_RETURN.RETURN_ONLY_FOR_READ)
 
-# TEST BLOCAGE
-servo_bloque = 3
-angle_bloque = 300
-sleep(0.5)
-dynamixel.set_position_no_response( ser, servo_bloque , angle_bloque )
-sleep(0.5)
+
+timing_comm = []
+timing_algo = []  # algo = compute new goal + safe check
+timing_pygame = []  # gestion mouvement par pygame
+timing_total = []  # total + gestion autre timing + (tick += move)
 
 t = time()
 tick = 0
 nb_tick = 10000
 for i in range(1,nb_tick):
+    t_total = time()
+
     tick += move
+
+    t_comm = time()
     for n in range(n_servo):
 
         # TEST BLOCAGE
-        if ( servo_id[n] == servo_bloque):
-            continue
+        # if ( servo_id[n] == 10):
+        #     continue
 
         # dynamixel.set_position( ser, servo_id[n], goal_pos_vect[n] )
         dynamixel.set_position_no_response( ser, servo_id[n], goal_pos_vect[n] )
 
-        print "    ", time()-t  # DEBUG
+        # print "    ", time()-t  # DEBUG
     #dynamixel.send_action_packet( ser )
-    print "  ", time()-t        # DEBUG
+    # print "  ", time()-t        # DEBUG
+    tmp = time()-t_comm
+    timing_comm.append(tmp)
+
+    t_algo = time()
 
     # compute next goal position vector
     goal_pos_vect = [ int( round( offset + amplitude_norm * sin( omega*n + tick*mvt_speed ) ) )    for n in range(n_servo) ]
@@ -176,6 +184,12 @@ for i in range(1,nb_tick):
 
     # Angle safe check (can slow execution)
     assert abs(max(goal_pos_vect)-offset) < 1024./300.*ANGLE_MAX , "Angle max (={}°) dépassé".format(ANGLE_MAX)
+
+    tmp = time()-t_algo
+    timing_algo.append(tmp)
+
+
+    t_pygame = time()
 
     # Gestion control serpent
     for event in pygame.event.get():    #Attente des événements
@@ -207,6 +221,14 @@ for i in range(1,nb_tick):
     fenetre.blit(textsurface,(0,30))
     pygame.display.flip()
 
+    tmp = time()-t_pygame
+    timing_pygame.append(tmp)
+
+    # print "  ", time()-t
+
+
+    tmp = time()-t_total
+    timing_total.append(tmp)
 
     # Wait next tick
     while( time() < t+i*tick_period ):    # tick => i
@@ -216,6 +238,36 @@ for i in range(1,nb_tick):
 
 
         #sleep(sleep_time)   # utile si tick_period>0.001 ?
-    print( time()-t )  # DEBUG
+    # print( time()-t )  # DEBUG
 
 print('Success!')
+
+
+timing_comm = [i*1000 for i in timing_comm]
+timing_algo = [i*1000 for i in timing_algo]
+timing_pygame = [i*1000 for i in timing_pygame]
+timing_total = [i*1000 for i in timing_total]
+
+plt.hist(timing_comm, bins = 100)
+plt.title("Repartition du temps d'execution\nde la communication avec les servomoteurs")
+plt.xlabel("temps d'execution (en ms)")
+plt.savefig("AAA6.png")
+plt.show()
+
+plt.hist(timing_algo, bins = 100)
+plt.title("Repartition du temps d'execution\ndu calcul des futures goal position")
+plt.xlabel("temps d'execution (en ms)")
+plt.savefig("BBB6.png")
+plt.show()
+
+plt.hist(timing_pygame, bins = 100)
+plt.title("Repartition du temps d'execution\nde la gestion du controle du robot par pygame")
+plt.xlabel("temps d'execution (en ms)")
+plt.savefig("CCC6.png")
+plt.show()
+
+plt.hist(timing_total, bins = 100)
+plt.title("Repartition du temps d'execution\ntotale d'une iteration")
+plt.xlabel("temps d'execution (en ms)")
+plt.savefig("DDD6.png")
+plt.show()

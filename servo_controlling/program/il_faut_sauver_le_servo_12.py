@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-
+"""
+Programme utilisé pour rétablir le contact avec le servo 12 qui a subi un
+changement invololontaire de valeurs de registres. Son Baudrate et son Id
+avait été changés.
+"""
 from pydynamixel import dynamixel, registers, packets
-
 
 
 # You'll need to change this to the serial port of your USB2Dynamixel
